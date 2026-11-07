@@ -27,6 +27,8 @@ const input = {
 let reply: unknown;
 let status = 200;
 let lastBody: any;
+let lastPath: string;
+let lastHeaders: Headers;
 let server: ServerType;
 let baseUrl: string;
 
@@ -34,6 +36,8 @@ beforeAll(async () => {
   const app = new Hono();
   app.post("*", async (c) => {
     lastBody = await c.req.json();
+    lastPath = new URL(c.req.url).pathname;
+    lastHeaders = c.req.raw.headers;
     return c.json(reply as object, status as 200);
   });
   await new Promise<void>((done) => {
@@ -51,9 +55,10 @@ const wrap: Record<Exclude<ModelProvider, "none">, (text: string) => unknown> = 
   anthropic: (text) => ({ content: [{ type: "text", text }] }),
   openai: (text) => ({ choices: [{ message: { content: text } }] }),
   google: (text) => ({ candidates: [{ content: { parts: [{ text }] } }] }),
+  "0g": (text) => ({ choices: [{ message: { content: text } }] }),
 };
 
-describe.each(["anthropic", "openai", "google"] as const)("%s adapter", (provider) => {
+describe.each(["anthropic", "openai", "google", "0g"] as const)("%s adapter", (provider) => {
   const config = () => ({ provider, model: "test-model", apiKey: "k", baseUrl, timeoutMs: 2000 });
 
   it("parses structured output", async () => {
@@ -80,6 +85,34 @@ describe.each(["anthropic", "openai", "google"] as const)("%s adapter", (provide
     status = 500;
     reply = { error: "boom" };
     expect((await reviewAction(config(), input)).status).toBe("failed");
+  });
+});
+
+describe("0G request", () => {
+  const config = () => ({ provider: "0g" as const, model: "glm-5.3", apiKey: "sk-test", baseUrl, timeoutMs: 2000 });
+
+  it("calls the Router's chat completions with a bearer key", async () => {
+    status = 200;
+    reply = wrap["0g"]('{"summary":"Fine.","veto":false}');
+    await reviewAction(config(), input);
+    expect(lastPath).toBe("/v1/chat/completions");
+    expect(lastHeaders.get("authorization")).toBe("Bearer sk-test");
+    expect(lastBody.model).toBe("glm-5.3");
+    expect(lastBody.response_format).toEqual({ type: "json_object" });
+    expect(lastBody.messages[0].role).toBe("system");
+  });
+
+  it("pins sealed inference and asks the Router to check the TEE signature", async () => {
+    status = 200;
+    reply = wrap["0g"]('{"summary":"Fine.","veto":false}');
+    await reviewAction(config(), input);
+    expect(lastHeaders.get("x-0g-provider-trust-mode")).toBe("private");
+    expect(lastBody.verify_tee).toBe(true);
+  });
+
+  it("is not configured without a key or a model, like the others", async () => {
+    expect((await reviewAction({ provider: "0g", model: "glm-5.3" }, input)).status).toBe("not_configured");
+    expect((await reviewAction({ provider: "0g", apiKey: "sk-test" }, input)).status).toBe("not_configured");
   });
 });
 

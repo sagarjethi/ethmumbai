@@ -1,7 +1,7 @@
 import type { Action, ModelReview, Reason, Verdict } from "@clearance/shared";
 import { z } from "zod";
 
-export type ModelProvider = "anthropic" | "openai" | "google" | "none";
+export type ModelProvider = "anthropic" | "openai" | "google" | "0g" | "none";
 
 export type ReviewConfig = {
   provider: ModelProvider;
@@ -58,6 +58,23 @@ function buildCall(config: Required<Pick<ReviewConfig, "model" | "apiKey">> & Re
       headers: { authorization: `Bearer ${apiKey}` },
       body: {
         model,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: INSTRUCTIONS },
+          { role: "user", content: prompt },
+        ],
+      },
+      text: (json) => json.choices?.[0]?.message?.content,
+    };
+  }
+  if (provider === "0g") {
+    return {
+      url: `${baseUrl ?? "https://router-api.0g.ai"}/v1/chat/completions`,
+      // Without a pinned tier the Router may pick a provider with nothing to verify. "private" fails with a 503 instead.
+      headers: { authorization: `Bearer ${apiKey}`, "x-0g-provider-trust-mode": "private" },
+      body: {
+        model,
+        verify_tee: true,
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: INSTRUCTIONS },
