@@ -466,10 +466,27 @@ details[open] > summary::after { content: "-"; }
   .check-list td:nth-child(2) { font-size: 14px; }
   .check-list td:nth-child(3) { justify-self: end; }
   .pg .code pre { white-space: pre; overflow-wrap: normal; height: auto; max-height: 240px; }
+
+  /* Everything a thumb presses is at least 40px. */
+  .mark { min-height: 40px; }
+  .icon-button { width: 40px; height: 40px; }
+  .nav-end .button.small { min-height: 40px; }
+  .gate-tabs button, .gate-pause { min-height: 40px; }
+  .tabs [role="tab"] { min-height: 40px; }
+  .copy { min-height: 40px; min-width: 56px; }
+  .way a { display: inline-flex; align-items: center; min-height: 40px; margin-top: 0; }
+  .toc a { display: inline-flex; align-items: center; min-height: 40px; }
+  .foot nav div { gap: 0; }
+  .foot nav a { display: flex; align-items: center; min-height: 40px; }
+  /* Links inside text keep their line height and get a bigger hit area. */
+  .hero-note a, .faq-head p a, .foot-note a { display: inline-block; padding: 12px 5px; margin: -12px -5px; }
+
 }
-@media (max-width: 360px) {
-  h1 { font-size: 58px; }
+@media (max-width: 374px) {
   /* Too narrow for the button, so it moves into the menu. */
   .nav-end .button.small { display: none; }
   .nav-links a.nav-narrow { display: block; }
+}
+@media (max-width: 360px) {
+  h1 { font-size: 58px; }
 }
