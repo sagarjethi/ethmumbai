@@ -50,6 +50,8 @@ export type ApiConfig = {
   reportToken?: string;
   publicUrl: string;
   monthlyQuota?: number;
+  /** Per address. Behind a gateway every caller shares one address, so the gateway limits per client instead. */
+  rateLimitPerMinute?: number;
 };
 
 type Variables = { keyId?: string; authKind: "api_key" | "x402" | "none"; decision?: Decision };
@@ -90,6 +92,7 @@ function bearer(header: string | undefined): string | undefined {
 export function apiApp(config: ApiConfig) {
   const { client, deployment, store, human } = config;
   const quota = config.monthlyQuota ?? DEFAULT_QUOTA;
+  const rateLimitPerMinute = config.rateLimitPerMinute ?? 120;
   const app = new Hono<{ Variables: Variables }>();
   const subscribers = new Set<(event: FeedEvent) => void>();
   const attesting = new Map<string, Promise<AttestationOutcome>>();
@@ -143,7 +146,7 @@ export function apiApp(config: ApiConfig) {
     const now = Date.now();
     const entry = hits.get(ip);
     if (!entry || now - entry.windowStart > 60_000) hits.set(ip, { windowStart: now, count: 1 });
-    else if (++entry.count > 120) return c.json({ error: "Too many requests. Try again in a minute." }, 429);
+    else if (++entry.count > rateLimitPerMinute) return c.json({ error: "Too many requests. Try again in a minute." }, 429);
     await next();
   };
 
