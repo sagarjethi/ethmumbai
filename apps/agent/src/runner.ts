@@ -3,7 +3,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import type { Hex, Address } from "viem";
 import { Agent } from "./agent";
-import { mockOwner } from "./mockOwner";
+import { mockOwnerVia } from "./mockOwner";
 import { runScenario, scenarios, type ScenarioResult } from "./scenarios";
 
 function required(name: string): string {
@@ -19,6 +19,13 @@ const agent = new Agent({
   deployment: loadDeployment(required("DEPLOYMENT_FILE")),
   agentKey: required("AGENT_KEY") as Hex,
   reportToken: process.env.REPORT_TOKEN,
+});
+
+/** Pairs of [browser-facing prefix, internal prefix], so the stub owner never leaves this machine. */
+const ownerUrlRewrites = JSON.parse(process.env.OWNER_URL_REWRITES ?? "[]") as [string, string][];
+const mockOwner = mockOwnerVia((url) => {
+  const rewrite = ownerUrlRewrites.find(([from]) => url.startsWith(`${from}/`));
+  return rewrite ? `${rewrite[1]}${url.slice(rewrite[0].length)}` : url;
 });
 
 /** The approval scenario waits for the person at the dashboard. The rest run unattended. */
