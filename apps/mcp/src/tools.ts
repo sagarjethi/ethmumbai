@@ -9,8 +9,10 @@ export type ClearanceClient = {
 };
 
 export function clearanceClient(apiUrl: string, apiKey: string, fetcher: typeof fetch = fetch): ClearanceClient {
+  // A pasted URL often ends in a slash, and "//v1" would be a 404.
+  const base = apiUrl.replace(/\/+$/, "");
   const call = async (path: string, init?: RequestInit): Promise<ToolResult> => {
-    const response = await fetcher(`${apiUrl}${path}`, {
+    const response = await fetcher(`${base}${path}`, {
       ...init,
       headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}`, ...init?.headers },
     });

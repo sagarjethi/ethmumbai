@@ -18,6 +18,12 @@ describe("the MCP tools' client", () => {
     expect((fetcher.mock.calls.at(-1) as unknown as [string])[0]).toBe("https://api.test/v1/proofs/..%2Fadmin%2Fkeys");
   });
 
+  it("accepts an API URL ending in a slash", async () => {
+    const seen = vi.fn(async () => new Response("{}", { status: 200 }));
+    await clearanceClient("https://api.test/", "k", seen as never).proof("d1");
+    expect((seen.mock.calls[0] as unknown as [string])[0]).toBe("https://api.test/v1/proofs/d1");
+  });
+
   it("reports a failure status instead of throwing", async () => {
     const failing = clearanceClient("https://api.test", "k", (async () => new Response("nope", { status: 500 })) as never);
     expect(await failing.checkToken("0x0")).toEqual({ ok: false, status: 500, body: null });
