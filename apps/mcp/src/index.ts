@@ -10,7 +10,7 @@ function required(name: string): string {
 }
 
 const client = clearanceClient(required("CLEARANCE_API_URL"), required("CLEARANCE_API_KEY"));
-const server = new McpServer({ name: "clearance", version: "0.1.0" });
+const server = new McpServer({ name: "beforecoin", version: "0.1.0" });
 
 const reply = (result: ToolResult) => ({
   isError: !result.ok,
