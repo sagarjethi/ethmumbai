@@ -28,13 +28,15 @@ const pidFile = resolve(ROOT, "data/public.pid");
 let stopping = false;
 
 function stopAll(code: number) {
-  if (stopping) return;
   stopping = true;
-  // Only the processes this script started, by handle.
-  for (const child of children) child.kill();
-  rmSync(pidFile, { force: true });
   process.exit(code);
 }
+// On every exit, including a failed deploy. Only the processes this script started, by handle.
+process.on("exit", () => {
+  stopping = true;
+  for (const child of children) child.kill();
+  rmSync(pidFile, { force: true });
+});
 process.on("SIGINT", () => stopAll(0));
 process.on("SIGTERM", () => stopAll(0));
 
