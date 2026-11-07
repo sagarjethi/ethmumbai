@@ -11,5 +11,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "exclude": ["apps/web", "apps/site", "cre"], "include": ["packages/*/src", "apps/verifier/src", "apps/api/src", "apps/agent/src", "apps/mcp/src", "apps/mock-world/src", "scripts", "tests"]
+  "exclude": ["apps/web", "apps/site", "cre"], "include": ["packages/*/src", "apps/verifier/src", "apps/api/src", "apps/agent/src", "apps/mcp/src", "apps/mock-world/src", "apps/gateway/src", "scripts", "tests"]
 }
