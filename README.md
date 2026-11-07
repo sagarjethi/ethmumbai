@@ -175,7 +175,7 @@ What's proven, and what isn't:
 | Hook, account, verifiers, API, scenarios | Tested end to end on a local chain |
 | Real v4, ENSv2 and Circle USDC | Every scenario passes on a Sepolia fork, including the smart account's ERC-1271 payment through x402. Not yet deployed to Sepolia |
 | CRE workflow | Compiles to WASM with `cre workflow build` and passes on the SDK's mock runtime. `cre workflow simulate` needs a logged-in account and hasn't run yet. `pnpm cre:simulate` is ready to run it. Up to that command, the script's `--prepare` run produced a real clearance on a Sepolia fork, and the local attestor attested it through the mock forwarder's address |
-| CRE price sources | Tested against mocks of each source's documented reply. CoinGecko's and Coinbase's reply shapes were checked against live keyless replies. CoinMarketCap's comes from its docs, since no key was available. No keyed request has been made |
+| CRE price sources | Tested against mocks of each source's documented reply. CoinGecko's and Coinbase's reply shapes were checked against live keyless replies. Both must answer, or no report is written. No keyed request has been made |
 | World ID | Runs against a local test issuer that proves nobody's humanity. Not yet run against World's sandbox |
 | Model review | Adapters tested against stub servers. Not yet run with real provider keys |
 | 0G review | Tested against a mock of the Router's documented format, through the full stack. No live 0G inference has run, so there is no real request id yet, and glm-5.3's output and latency are unchecked |
@@ -209,7 +209,7 @@ To simulate the CRE workflow, which needs no deployment or funds:
 
 ```bash
 ~/.cre/bin/cre login
-export COINGECKO_API_KEY=<your key> COINMARKETCAP_API_KEY=<your key>
+export COINGECKO_API_KEY=<your key>
 pnpm cre:simulate
 ```
 
