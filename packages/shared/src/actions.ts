@@ -67,6 +67,17 @@ export type Reason = {
   source?: string;
 };
 
+/** What 0G's Router reports about the run behind a review. */
+export type ModelTrace = {
+  requestId?: string;
+  /** The id 0G's SDK needs to check the TEE signature independently of the Router. */
+  chatId?: string;
+  /** Onchain address of the 0G provider that served the request. */
+  servedBy?: string;
+  /** The Router's own check of the TEE signature. Absent means no check was reported. */
+  teeVerified?: boolean;
+};
+
 export type ModelReview = {
   status: "not_configured" | "ok" | "failed";
   provider: string;
@@ -74,6 +85,7 @@ export type ModelReview = {
   summary?: string;
   veto?: boolean;
   error?: string;
+  trace?: ModelTrace;
 };
 
 export type Evaluation = {

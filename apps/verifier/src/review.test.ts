@@ -26,6 +26,7 @@ const input = {
 
 let reply: unknown;
 let status = 200;
+let replyHeaders: Record<string, string> = {};
 let lastBody: any;
 let lastPath: string;
 let lastHeaders: Headers;
@@ -38,7 +39,7 @@ beforeAll(async () => {
     lastBody = await c.req.json();
     lastPath = new URL(c.req.url).pathname;
     lastHeaders = c.req.raw.headers;
-    return c.json(reply as object, status as 200);
+    return c.json(reply as object, status as 200, replyHeaders);
   });
   await new Promise<void>((done) => {
     server = serve({ fetch: app.fetch, port: 0, hostname: "127.0.0.1" }, (info) => {
@@ -86,6 +87,12 @@ describe.each(["anthropic", "openai", "google", "0g"] as const)("%s adapter", (p
     reply = { error: "boom" };
     expect((await reviewAction(config(), input)).status).toBe("failed");
   });
+
+  it("reports an unreachable provider as failed", async () => {
+    const review = await reviewAction({ ...config(), baseUrl: "http://127.0.0.1:1" }, input);
+    expect(review.status).toBe("failed");
+    expect(review.veto).toBeUndefined();
+  });
 });
 
 describe("0G request", () => {
@@ -108,6 +115,90 @@ describe("0G request", () => {
     await reviewAction(config(), input);
     expect(lastHeaders.get("x-0g-provider-trust-mode")).toBe("private");
     expect(lastBody.verify_tee).toBe(true);
+  });
+
+  const routerReply = (text: string, teeVerified: unknown = true) => ({
+    id: "chatcmpl-1",
+    choices: [{ message: { content: text } }],
+    x_0g_trace: {
+      request_id: "0852f405-6c56-40c2-a800-e6fd70785065",
+      provider: "0xd9966e13a6026Fcca4b13E7ff95c94DE268C471C",
+      billing: { input_cost: "1", output_cost: "2", total_cost: "3" },
+      tee_verified: teeVerified,
+    },
+  });
+
+  it("records the request id, the provider and the TEE result", async () => {
+    status = 200;
+    replyHeaders = { "ZG-Res-Key": "chat-from-header" };
+    reply = routerReply('{"summary":"Fine.","veto":false}');
+    const review = await reviewAction(config(), input);
+    replyHeaders = {};
+    expect(review).toMatchObject({
+      status: "ok",
+      trace: {
+        requestId: "0852f405-6c56-40c2-a800-e6fd70785065",
+        chatId: "chat-from-header",
+        servedBy: "0xd9966e13a6026Fcca4b13E7ff95c94DE268C471C",
+        teeVerified: true,
+      },
+    });
+  });
+
+  it("falls back to the body id when the header is missing", async () => {
+    status = 200;
+    reply = routerReply('{"summary":"Fine.","veto":false}');
+    expect((await reviewAction(config(), input)).trace?.chatId).toBe("chatcmpl-1");
+  });
+
+  it("keeps the request id when 0G refuses, such as an empty balance", async () => {
+    status = 402;
+    reply = { error: { code: "insufficient_balance" }, request_id: "req_abc123" };
+    const review = await reviewAction(config(), input);
+    expect(review).toMatchObject({ status: "failed", error: "provider returned 402", trace: { requestId: "req_abc123" } });
+    expect(review.veto).toBeUndefined();
+  });
+
+  it("treats a bad TEE signature as no review at all", async () => {
+    status = 200;
+    reply = routerReply('{"summary":"All good.","veto":false}', false);
+    const review = await reviewAction(config(), input);
+    expect(review).toMatchObject({ status: "failed", error: "TEE signature did not verify", trace: { teeVerified: false } });
+    expect(review.summary).toBeUndefined();
+  });
+
+  it("keeps a veto even when the TEE signature is bad", async () => {
+    status = 200;
+    reply = routerReply('{"summary":"Risky.","veto":true}', false);
+    expect(await reviewAction(config(), input)).toMatchObject({ status: "ok", veto: true, trace: { teeVerified: false } });
+  });
+
+  it("doesn't claim a TEE check the Router didn't report", async () => {
+    status = 200;
+    reply = routerReply('{"summary":"Fine.","veto":false}', null);
+    const review = await reviewAction(config(), input);
+    expect(review.status).toBe("ok");
+    expect(review.trace?.teeVerified).toBeUndefined();
+  });
+
+  it("keeps a veto when the trace is malformed", async () => {
+    status = 200;
+    reply = { choices: [{ message: { content: '{"summary":"Risky.","veto":true}' } }], x_0g_trace: "nonsense" };
+    expect(await reviewAction(config(), input)).toMatchObject({ status: "ok", veto: true });
+  });
+
+  it("reports a reply that isn't JSON as failed", async () => {
+    const app = new Hono();
+    app.post("*", (c) => c.text("<html>bad gateway</html>"));
+    const url = await new Promise<{ server: ServerType; url: string }>((done) => {
+      const s = serve({ fetch: app.fetch, port: 0, hostname: "127.0.0.1" }, (info) =>
+        done({ server: s, url: `http://127.0.0.1:${info.port}` }),
+      );
+    });
+    const review = await reviewAction({ ...config(), baseUrl: url.url }, input);
+    url.server.close();
+    expect(review.status).toBe("failed");
+    expect(review.veto).toBeUndefined();
   });
 
   it("is not configured without a key or a model, like the others", async () => {

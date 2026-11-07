@@ -1,4 +1,4 @@
-import type { Action, ModelReview, Reason, Verdict } from "@clearance/shared";
+import type { Action, ModelReview, ModelTrace, Reason, Verdict } from "@clearance/shared";
 import { z } from "zod";
 
 export type ModelProvider = "anthropic" | "openai" | "google" | "0g" | "none";
@@ -40,7 +40,27 @@ function userPrompt(input: ReviewInput): string {
   ].join("\n");
 }
 
-type Call = { url: string; headers: Record<string, string>; body: unknown; text: (json: any) => unknown };
+type Call = {
+  url: string;
+  headers: Record<string, string>;
+  body: unknown;
+  text: (json: any) => unknown;
+  trace?: (json: any, headers: Headers) => ModelTrace;
+};
+
+const traceField = (value: unknown) => (typeof value === "string" && value ? value.slice(0, 128) : undefined);
+
+/** A malformed trace is reported as missing fields, so it can never cost a review its veto. */
+function zeroGTrace(json: any, headers: Headers): ModelTrace {
+  const trace = json?.x_0g_trace;
+  const fields: ModelTrace = {
+    requestId: traceField(trace?.request_id) ?? traceField(json?.request_id),
+    chatId: traceField(headers.get("zg-res-key")) ?? traceField(json?.id),
+    servedBy: traceField(trace?.provider),
+    teeVerified: typeof trace?.tee_verified === "boolean" ? trace.tee_verified : undefined,
+  };
+  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== undefined));
+}
 
 function buildCall(config: Required<Pick<ReviewConfig, "model" | "apiKey">> & ReviewConfig, prompt: string): Call {
   const { provider, model, apiKey, baseUrl } = config;
@@ -82,6 +102,7 @@ function buildCall(config: Required<Pick<ReviewConfig, "model" | "apiKey">> & Re
         ],
       },
       text: (json) => json.choices?.[0]?.message?.content,
+      trace: zeroGTrace,
     };
   }
   if (provider !== "google") throw new Error(`unknown model provider: ${provider}`);
@@ -111,6 +132,7 @@ export async function reviewAction(config: ReviewConfig, input: ReviewInput): Pr
     return { status: "not_configured", provider: config.provider };
   }
   const base = { provider: config.provider, model: config.model };
+  let trace: ModelTrace | undefined;
   try {
     const call = buildCall({ ...config, model: config.model, apiKey: config.apiKey }, userPrompt(input));
     const response = await fetch(call.url, {
@@ -119,11 +141,15 @@ export async function reviewAction(config: ReviewConfig, input: ReviewInput): Pr
       body: JSON.stringify(call.body),
       signal: AbortSignal.timeout(config.timeoutMs ?? 20_000),
     });
+    const json = await response.json().catch(() => undefined);
+    trace = call.trace?.(json, response.headers);
     if (!response.ok) throw new Error(`provider returned ${response.status}`);
-    const output = parseOutput(call.text(await response.json()));
-    return { status: "ok", ...base, summary: output.summary, veto: output.veto };
+    const output = parseOutput(json === undefined ? undefined : call.text(json));
+    // A failed signature means this isn't a verified opinion. A veto still stands, because a veto can only refuse.
+    if (trace?.teeVerified === false && !output.veto) throw new Error("TEE signature did not verify");
+    return { status: "ok", ...base, summary: output.summary, veto: output.veto, ...(trace && { trace }) };
   } catch (error) {
-    return { status: "failed", ...base, error: (error as Error).message.slice(0, 200) };
+    return { status: "failed", ...base, error: (error as Error).message.slice(0, 200), ...(trace && { trace }) };
   }
 }
 
