@@ -4,6 +4,7 @@ import {
   packPaymentSignature,
   routerAbi,
   type Deployment,
+  type ModelReview,
   type PaymentAction,
   type PoolKey,
   type SwapAction,
@@ -34,7 +35,7 @@ export type DecisionResponse = {
   clearance?: { maxAmountIn: string; minAmountOut: string; expiry: number; nonce: string };
   attestationRequired?: boolean;
   verifierSignatures?: { signer: Address; signature: Hex }[];
-  evaluations: { verifier: Address; verdict: string; maxAmount: string; minAmountOut: string; reasons: { code: string; detail: string }[] }[];
+  evaluations: { verifier: Address; verdict: string; maxAmount: string; minAmountOut: string; reasons: { code: string; detail: string }[]; review: ModelReview }[];
   checkpoint?: { id: string; url: string };
   error?: string;
 };

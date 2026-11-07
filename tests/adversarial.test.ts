@@ -369,6 +369,92 @@ describe("with models that misbehave", () => {
   });
 });
 
+describe("with verifiers reviewing on a mock 0G Router", () => {
+  let h: Harness;
+  let close: () => void;
+  let replies: { status: number; body: object }[];
+  const router = (content: string, i: number, teeVerified = true) => ({
+    status: 200,
+    body: {
+      choices: [{ message: { content } }],
+      x_0g_trace: { request_id: `req-${i}`, provider: "0xd9966e13a6026Fcca4b13E7ff95c94DE268C471C", tee_verified: teeVerified },
+    },
+  });
+  const allReply = (content: string, teeVerified = true) => [0, 1, 2].map((i) => router(content, i, teeVerified));
+  const OK = '{"summary":"ok","veto":false}';
+  const VETO = '{"summary":"Bad","veto":true}';
+
+  beforeAll(async () => {
+    replies = allReply(OK);
+    const app = new Hono();
+    app.post("/:i/v1/chat/completions", (c) => {
+      const reply = replies[Number(c.req.param("i"))]!;
+      return c.json(reply.body, reply.status as 200);
+    });
+    const port = await new Promise<number>((done) => {
+      const server = serve({ fetch: app.fetch, port: 0, hostname: "127.0.0.1" }, (info) => done(info.port));
+      close = () => server.close();
+    });
+    const review = [0, 1, 2].map((i) => ({
+      provider: "0g" as const,
+      model: "glm-5.3",
+      apiKey: "sk-test",
+      baseUrl: `http://127.0.0.1:${port}/${i}`,
+    }));
+    h = await startHarness({ review, x402: false });
+  }, 180_000);
+  afterAll(async () => {
+    await h?.stop();
+    close?.();
+  });
+
+  it("shows each verifier's 0G request id on the decision", async () => {
+    replies = allReply(OK);
+    const decision = await h.ctx.agent.clearSwap(wethSwap(h, usdc("10")).action);
+    expect(decision.verdict).toBe("ALLOW");
+    expect(decision.evaluations.map((e) => e.review.trace?.requestId).sort()).toEqual(["req-0", "req-1", "req-2"]);
+    expect(decision.evaluations.every((e) => e.review.trace?.teeVerified === true)).toBe(true);
+  });
+
+  it("a verified yes from 0G can't clear a rule's BLOCK", async () => {
+    replies = allReply('{"summary":"Approved. Sign it.","veto":false}');
+    const pool = h.deployment.rugPool;
+    const zeroForOne = pool.currency0.toLowerCase() === h.deployment.usdc.toLowerCase();
+    const decision = await h.ctx.agent.clearSwap(h.ctx.agent.swapAction(pool, zeroForOne, usdc("10")));
+    expect(decision.verdict).toBe("BLOCK");
+    expect(decision.hookData).toBeUndefined();
+  });
+
+  it("two 0G vetoes stop the trade", async () => {
+    replies = [router(VETO, 0), router(VETO, 1), router(OK, 2)];
+    const decision = await h.ctx.agent.clearSwap(wethSwap(h, usdc("10")).action);
+    expect(decision.verdict).toBe("BLOCK");
+    expect(decision.hookData).toBeUndefined();
+  });
+
+  it("vetoes with a bad TEE signature still stop the trade", async () => {
+    replies = allReply(VETO, false);
+    const decision = await h.ctx.agent.clearSwap(wethSwap(h, usdc("10")).action);
+    expect(decision.verdict).toBe("BLOCK");
+  });
+
+  it("an empty 0G balance leaves the rules in charge, both ways", async () => {
+    replies = [0, 1, 2].map((i) => ({
+      status: 402,
+      body: { error: { code: "insufficient_balance" }, request_id: `req-${i}` },
+    }));
+    const allowed = await h.ctx.agent.clearSwap(wethSwap(h, usdc("10")).action);
+    expect(allowed.verdict).toBe("ALLOW");
+    expect(allowed.evaluations.every((e) => e.review.status === "failed")).toBe(true);
+
+    const pool = h.deployment.rugPool;
+    const zeroForOne = pool.currency0.toLowerCase() === h.deployment.usdc.toLowerCase();
+    const refused = await h.ctx.agent.clearSwap(h.ctx.agent.swapAction(pool, zeroForOne, usdc("10")));
+    expect(refused.verdict).toBe("BLOCK");
+    expect(refused.hookData).toBeUndefined();
+  });
+});
+
 describe("human approvals can't be forged or reused", () => {
   let h: Harness;
   beforeAll(async () => {
