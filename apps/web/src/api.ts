@@ -5,7 +5,7 @@ export type Evaluation = {
   maxAmount: string;
   reasons: Reason[];
   evidenceHash: string;
-  review: { status: string; provider: string; model?: string; summary?: string; veto?: boolean; error?: string };
+  review: { status: string; provider: string; model?: string; summary?: string; veto?: boolean; error?: string; trace?: { requestId?: string } };
 };
 export type Decision = {
   id: string;
