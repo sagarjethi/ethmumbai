@@ -189,7 +189,7 @@ h1 { font: 600 clamp(62px, 7vw, 104px)/.92 var(--cond); letter-spacing: -.006em;
 /* ---- Built with ---- */
 .built { margin-top: clamp(40px, 5vw, 64px); }
 .built h2 { font: 500 16px/1.4 var(--sans); color: var(--muted); margin-bottom: 12px; }
-.built dl { margin: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.built dl { margin: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--line); }
 .built dl > div { padding: 14px 18px 0 0; }
 .built dl > div + div { padding-left: 18px; border-left: 1px solid var(--line); }
 .built dt { font: 600 24px/1.1 var(--cond); margin-bottom: 4px; }
@@ -374,7 +374,7 @@ details[open] > summary::after { content: "-"; }
   .plans > :last-child, .ways > :last-child { grid-column: 1 / -1; }
   .built dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
   .built dl > div, .built dl > div + div { padding: 14px 0; border-left: 0; border-bottom: 1px solid var(--line); }
-  .built dl > div:last-child { grid-column: 1 / -1; border-bottom: 0; }
+  .built dl > div:nth-last-child(-n+2) { border-bottom: 0; }
   .pg { grid-template-columns: minmax(0, 1fr); }
   .pg-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pg-panel { grid-template-columns: minmax(0, 1fr); }

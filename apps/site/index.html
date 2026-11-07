@@ -117,6 +117,7 @@
         <div><dt>World ID</dt><dd>Big trades need a fresh approval from the owner.</dd></div>
         <div><dt>Chainlink CRE</dt><dd>A workflow re-derives big decisions and writes its finding on chain.</dd></div>
         <div><dt>x402</dt><dd>Agents pay for checks, and their payments need verifiers too.</dd></div>
+        <div><dt>0G</dt><dd>An optional model review provider, tested against a mock so far.</dd></div>
       </dl>
     </section>
 
@@ -338,7 +339,7 @@
       </div>
       <div class="tests" aria-label="Test counts">
         <div><b>60</b><span>Foundry tests</span></div>
-        <div><b>125</b><span>TypeScript tests</span></div>
+        <div><b>150</b><span>TypeScript tests</span></div>
         <div><b>14</b><span>Sepolia fork tests</span></div>
         <div><b>9</b><span>CRE mock-runtime tests</span></div>
         <div><b>7 of 7</b><span>Demo scenarios pass</span></div>
@@ -353,6 +354,7 @@
             <tr><td>Chainlink CRE workflow</td><td><span class="tag warn">Mock runtime</span></td><td>Compiles to WASM and passes on the SDK's mock runtime. <code>cre workflow simulate</code> hasn't run yet.</td></tr>
             <tr><td>World ID</td><td><span class="tag warn">Test issuer</span></td><td>Runs against a local test issuer that proves nobody's humanity. Not yet run against World's sandbox.</td></tr>
             <tr><td>Model review</td><td><span class="tag warn">Stub servers</span></td><td>Adapters tested against stubs. Not yet run with real provider keys.</td></tr>
+            <tr><td>0G review</td><td><span class="tag warn">Mock only</span></td><td>An optional provider, tested against a mock of the Router's format. No live 0G inference has run.</td></tr>
             <tr><td>x402 with a smart account</td><td><span class="tag warn">Fork only</span></td><td>Works on the fork with the reference facilitator. Unproven on real Sepolia.</td></tr>
             <tr><td>External audit</td><td><span class="tag bad">None</span></td><td>The contracts haven't had one. Don't put real funds behind them.</td></tr>
           </tbody>
