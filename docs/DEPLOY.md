@@ -48,7 +48,7 @@ You also need the contract submodules, which `--recursive` fetches.
 Bun isn't needed for the demo.
 
 ```bash
-git clone --recursive --branch feat/demo-deploy https://github.com/sagarjethi/ethmumbai.git demo
+git clone --recursive https://github.com/sagarjethi/ethmumbai.git demo
 cd demo
 pnpm install --frozen-lockfile
 ```
