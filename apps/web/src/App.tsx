@@ -606,6 +606,7 @@ function DecisionDetail({ decision, tokens }: { decision: Decision; tokens?: Age
             <p className="model">
               {e.review.status === "ok" ? `${e.review.provider}: ${e.review.summary}` : e.review.status === "failed" ? `${e.review.provider} failed, so rules alone decided.` : "No model set up. Rules alone decided."}
             </p>
+            {e.review.trace?.requestId && <code className="hash request-id">Request ID {e.review.trace.requestId}</code>}
             <code className="hash" title={e.evidenceHash}>Evidence {short(e.evidenceHash, 10, 6)}</code>
           </div>
         ))}
