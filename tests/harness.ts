@@ -49,7 +49,13 @@ export async function startHarness(
       value: toHex(10n ** 15n, { size: 32 }),
     });
   }
-  deployLocal(rpcUrl, deploymentFile, options.forkUrl ? { ...V4_SEPOLIA, USDC: CIRCLE_USDC_SEPOLIA, RESOLVER: RESOLVER_SET_LATER } : {});
+  try {
+    deployLocal(rpcUrl, deploymentFile, options.forkUrl ? { ...V4_SEPOLIA, USDC: CIRCLE_USDC_SEPOLIA, RESOLVER: RESOLVER_SET_LATER } : {});
+  } catch (error) {
+    // Nothing else holds this chain yet, so a failed deploy would leave it running forever.
+    anvil.kill();
+    throw error;
+  }
   const deployment = loadDeployment(deploymentFile);
   rmSync(deploymentFile);
 
