@@ -20,7 +20,7 @@ const CRE_ROOT = resolve(ROOT, "cre");
 const FORK_PORT = 18645;
 // CRE's MockKeystoneForwarder on Sepolia, from https://docs.chain.link/cre/guides/workflow/using-evm-client/forwarder-directory
 const MOCK_FORWARDER = "0x15fC6ae953E024d975e77382eEeC56A9101f9F88";
-const KEY_NAMES = ["COINGECKO_API_KEY", "COINMARKETCAP_API_KEY"];
+const KEY_NAMES = ["COINGECKO_API_KEY"];
 const OUTPUT = resolve(ROOT, "docs/cre-simulation.txt");
 const STATUS = ["no report", "attested", "refused"];
 
