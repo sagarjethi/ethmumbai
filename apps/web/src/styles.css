@@ -384,6 +384,24 @@ tr.revoked td:not(:last-child) { color: var(--muted); text-decoration: line-thro
   table.stack td { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 3px 12px; border: 0; white-space: normal; text-align: right; overflow-wrap: anywhere; }
   table.stack td[data-label]::before { content: attr(data-label); color: var(--muted); font-size: 13px; flex: none; }
   table.stack td.right:not([data-label]) { justify-content: flex-end; }
+
+  /* Everything a thumb presses is at least 40px. */
+  .mark { min-height: 40px; }
+  .tabs a { display: inline-flex; align-items: center; min-height: 40px; }
+  .icon-button { width: 40px; height: 40px; }
+  .button, .button.small { min-height: 40px; }
+  .button.small { min-width: 56px; font-size: 14px; }
+  /* 16px also stops iOS zooming the page when a field gets focus. */
+  input { min-height: 40px; font-size: 16px; }
+  .req-list button { min-height: 40px; }
+  /* Links inside text keep their line height and get a taller hit area. */
+  .tile a, .panel-link, .facts dd a, .detail-foot a { display: inline-block; padding-block: 12px; margin-block: -12px; }
+  .detail-foot { margin-top: 18px; }
+  .detail-foot span { display: block; margin-top: 16px; }
+}
+@media (max-width: 350px) {
+  /* A full address stays on one line on the narrowest phones. */
+  .account-wallet code, dd code { font-size: 10px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .strip { animation: slot .22s ease-out; }
