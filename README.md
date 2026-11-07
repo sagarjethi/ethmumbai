@@ -85,6 +85,15 @@ Only an approved creator can open a pool on the hook, and the owner lists the po
 | Charging for a check | [`apps/api/src/x402.ts`](apps/api/src/x402.ts) |
 | A smart account paying, with verifiers inside the signature | [`Agent.paymentSigner`](apps/agent/src/agent.ts), [`isValidSignature`](contracts/src/ClearanceAccount.sol#L154) |
 
+### 0G
+
+| What | Where |
+|---|---|
+| Verifier model review on 0G Private Computer, pinned to sealed inference with the TEE check on | [`apps/verifier/src/review.ts`](apps/verifier/src/review.ts#L90) |
+| The request id and TEE result recorded on every review | [`zeroGTrace`](apps/verifier/src/review.ts#L54) |
+| A bad TEE signature, an empty balance or an outage can't approve anything | [`tests/adversarial.test.ts`](tests/adversarial.test.ts#L372) |
+| One live review, printing its request id | [`scripts/0g-review.ts`](scripts/0g-review.ts) |
+
 ## Tests
 
 ```bash
@@ -108,6 +117,7 @@ What's proven, and what isn't:
 | CRE workflow | Compiles to WASM and passes on the SDK's mock runtime. `cre workflow simulate` needs a logged-in account and hasn't run yet |
 | World ID | Runs against a local test issuer that proves nobody's humanity. Not yet run against World's sandbox |
 | Model review | Adapters tested against stub servers. Not yet run with real provider keys |
+| 0G review | Tested against a mock of the Router's documented format, through the full stack. No live 0G inference has run, so there is no real request id yet, and glm-5.3's output and latency are unchecked |
 | x402 on Launa | Unproven with a smart account on real Sepolia. The fork runs use the npm reference facilitator |
 
 An independent review found a critical bug, now fixed and tested: anyone could open a pool on the hook at an absurd price, and verifiers would have trusted it.
@@ -121,6 +131,7 @@ Known limits:
 - **One agent per deployment.** The verifiers read one resolver, so more agents need their own deployment for now.
 - **The dashboard's admin token** is held by its dev server, which binds to localhost. A hosted version needs real owner sign-in first.
 - **GoPlus and CoinGecko aren't used**, because they have no data for Sepolia test tokens. The bytecode rule and Quoter do this job on testnet.
+- **0G review is optional, and it can only refuse.** Rules still decide without it, and in a 2-of-3 quorum one verifier's veto doesn't stop a trade on its own. `tee_verified` is the Router's own claim. Independent checking with 0G's SDK isn't built, though the id it needs is recorded.
 - **The contracts haven't had an external audit.** Don't put real funds behind them.
 
 ## Deploy to Sepolia
