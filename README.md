@@ -25,6 +25,8 @@ pnpm start
 - Dashboard: http://localhost:5183
 - Try every attack from the dashboard's attack lab, or with `pnpm demo`.
 
+Live demo, on a throwaway local chain with a test issuer: https://beforecoin.payminto.io (dashboard at `/dashboard/`, API at `/api`).
+
 ## How it works
 
 1. **The owner sets limits** in the agent's ENS records: size, price impact, tokens, payees.
