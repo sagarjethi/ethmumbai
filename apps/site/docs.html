@@ -27,7 +27,7 @@
   </header>
   <div class="docs">
     <nav class="toc" aria-label="On this page">
-      <a href="#quickstart">Quickstart</a><a href="#swap">Clear a swap</a><a href="#verdicts">Verdicts</a><a href="#human">Owner approval</a><a href="#attest">Independent check</a><a href="#payment">Clear a payment</a><a href="#mcp">MCP server</a><a href="#public">Public endpoints</a><a href="#limits">Owner limits</a><a href="#errors">Errors</a><a href="#contracts">Contracts</a>
+      <a href="#quickstart">Quickstart</a><a href="#swap">Clear a swap</a><a href="#verdicts">Verdicts</a><a href="#human">Owner approval</a><a href="#attest">Independent check</a><a href="#payment">Clear a payment</a><a href="#mcp">MCP server</a><a href="#skill">Agent skill</a><a href="#public">Public endpoints</a><a href="#limits">Owner limits</a><a href="#errors">Errors</a><a href="#contracts">Contracts</a>
     </nav>
     <article class="prose" id="docs-main">
       <h1>Docs</h1>
@@ -121,6 +121,14 @@ pnpm start</code></pre>
         </tbody>
       </table>
       <p>The server has no payment tool yet, so payments go through your x402 signer over REST.</p>
+      <h2 id="skill">Agent skill</h2>
+      <p><code>skills/beforecoin</code> tells an agent to get a check before every swap or payment, what each verdict means, how to submit the result to its wallet, and never to route around a refusal.</p>
+      <p>For Claude Code, copy it to one of the <a href="https://code.claude.com/docs/en/skills">skill folders in Claude Code's docs</a>:</p>
+<pre><code>mkdir -p ~/.claude/skills &amp;&amp; cp -R skills/beforecoin ~/.claude/skills/   # all your projects
+mkdir -p .claude/skills &amp;&amp; cp -R skills/beforecoin .claude/skills/       # one project</code></pre>
+      <p>For another agent, give it <code>SKILL.md</code> as instructions, and let it read <code>references/</code> and run the script. It takes a swap as JSON, needs only Node, and reads <code>CLEARANCE_API_URL</code> and <code>CLEARANCE_API_KEY</code>:</p>
+<pre><code>node skills/beforecoin/scripts/check.ts swap.json</code></pre>
+      <p>It exits <code>0</code> only for <code>ALLOW</code>, so a refusal or an error can't fall through to a swap. <code>tests/skill.test.ts</code> runs it against a throwaway stack. No model has been run with the skill loaded yet, so how well agents follow it is untested.</p>
 
       <h2 id="public">Public endpoints</h2>
       <table>

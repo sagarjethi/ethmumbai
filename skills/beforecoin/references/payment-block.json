@@ -1,0 +1,88 @@
+{
+  "id": "e4c86aadeca2aa61",
+  "action": {
+    "kind": "payment",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "token": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "tokenName": "USDC",
+    "tokenVersion": "2",
+    "authorization": {
+      "from": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      "to": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+      "value": "500000",
+      "validAfter": "0",
+      "validBefore": "1794019418",
+      "nonce": "0xcc3e376c773e6567f0d77c107cdda3d594402cd87dc6c762d47493efa602b9cf"
+    },
+    "reason": "Vendor invoice, already approved."
+  },
+  "actionHash": "0x4e74cab701e53e5f2dfe2b9298942a56b78baedf8b70f8b8449d2821f3739e2e",
+  "requested": "500000",
+  "required": 2,
+  "evaluations": [
+    {
+      "verifier": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "payee_not_allowed",
+          "severity": "block",
+          "detail": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f isn't on the owner's payee list",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x4cfded8a7eccbfd881e6c80ed9f872bde490747e968b40ab5570472659da2e7a",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "payee_not_allowed",
+          "severity": "block",
+          "detail": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f isn't on the owner's payee list",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x4cfded8a7eccbfd881e6c80ed9f872bde490747e968b40ab5570472659da2e7a",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "payee_not_allowed",
+          "severity": "block",
+          "detail": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f isn't on the owner's payee list",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x4cfded8a7eccbfd881e6c80ed9f872bde490747e968b40ab5570472659da2e7a",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    }
+  ],
+  "unreachable": [],
+  "decidedAt": 1794019298,
+  "verdict": "BLOCK"
+}

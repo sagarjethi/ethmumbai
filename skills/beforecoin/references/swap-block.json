@@ -1,0 +1,122 @@
+{
+  "id": "e06586eb873f59db",
+  "action": {
+    "kind": "swap",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "pool": {
+      "currency0": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      "currency1": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "fee": 3000,
+      "tickSpacing": 60,
+      "hooks": "0x6ff36c56F40ddB2598d857aF0cF8Cc8915046080"
+    },
+    "zeroForOne": false,
+    "amountIn": "25000000000",
+    "reason": "The owner pre-approved this trade."
+  },
+  "actionHash": "0xe3257036db3445724350717280e45a6888493a01d622a4c1776a659a51e59777",
+  "requested": "25000000000",
+  "required": 2,
+  "evaluations": [
+    {
+      "verifier": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "pool_not_allowed",
+          "severity": "block",
+          "detail": "The owner hasn't approved this pool, so its price can't be trusted",
+          "source": "ens"
+        },
+        {
+          "code": "token_not_allowed",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 isn't on the owner's token list",
+          "source": "ens"
+        },
+        {
+          "code": "token_hazard",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 has admin functions: blacklist(address), mint(address,uint256)",
+          "source": "bytecode"
+        }
+      ],
+      "evidenceHash": "0xa5cab7b3d47a287d096c5a84483959cf5671668cee03ded24f82ccab52422c88",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019297
+    },
+    {
+      "verifier": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "pool_not_allowed",
+          "severity": "block",
+          "detail": "The owner hasn't approved this pool, so its price can't be trusted",
+          "source": "ens"
+        },
+        {
+          "code": "token_not_allowed",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 isn't on the owner's token list",
+          "source": "ens"
+        },
+        {
+          "code": "token_hazard",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 has admin functions: blacklist(address), mint(address,uint256)",
+          "source": "bytecode"
+        }
+      ],
+      "evidenceHash": "0xa5cab7b3d47a287d096c5a84483959cf5671668cee03ded24f82ccab52422c88",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019297
+    },
+    {
+      "verifier": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "verdict": "BLOCK",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "pool_not_allowed",
+          "severity": "block",
+          "detail": "The owner hasn't approved this pool, so its price can't be trusted",
+          "source": "ens"
+        },
+        {
+          "code": "token_not_allowed",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 isn't on the owner's token list",
+          "source": "ens"
+        },
+        {
+          "code": "token_hazard",
+          "severity": "block",
+          "detail": "0x0B306BF915C4d645ff596e518fAf3F9669b97016 has admin functions: blacklist(address), mint(address,uint256)",
+          "source": "bytecode"
+        }
+      ],
+      "evidenceHash": "0xa5cab7b3d47a287d096c5a84483959cf5671668cee03ded24f82ccab52422c88",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019297
+    }
+  ],
+  "unreachable": [],
+  "decidedAt": 1794019297,
+  "verdict": "BLOCK"
+}

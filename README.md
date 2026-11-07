@@ -138,6 +138,29 @@ pnpm test:fork
 `pnpm test:fork` runs every attack against the real Sepolia PoolManager, Quoter and StateView, with limits on a real ENSv2 name, on a throwaway fork.
 All tests use throwaway chains and temporary databases.
 
+## Use it from an agent skill
+
+[`skills/beforecoin`](skills/beforecoin/SKILL.md) tells an agent to get a check before every swap or payment, what each verdict means, how to submit the result to its wallet, and never to route around a refusal.
+
+For Claude Code, copy it to one of the [skill folders in Claude Code's docs](https://code.claude.com/docs/en/skills):
+
+```bash
+mkdir -p ~/.claude/skills && cp -R skills/beforecoin ~/.claude/skills/   # all your projects
+mkdir -p .claude/skills && cp -R skills/beforecoin .claude/skills/       # one project
+```
+
+For another agent, give it `SKILL.md` as instructions, and let it read `references/` and run `scripts/check.ts`.
+The script takes a swap as JSON, needs only Node, and reads `CLEARANCE_API_URL` and `CLEARANCE_API_KEY`:
+
+```bash
+node skills/beforecoin/scripts/check.ts swap.json
+```
+
+It exits `0` only for `ALLOW`, so a refusal or an error can't fall through to a swap.
+
+`tests/skill.test.ts` runs the script against a throwaway stack: `ALLOW` executes through the smart account and `BLOCK` is refused on chain, along with `REDUCE`, `HUMAN_REQUIRED` and payments.
+No model has been run with the skill loaded yet, in Claude Code or anywhere else, so how well agents follow it is untested.
+
 ## Status
 
 What's proven, and what isn't:
@@ -191,6 +214,7 @@ apps/verifier/    Facts, rules, model review, signing
 apps/api/         Clearing, quorum, World gate, x402, keys, proofs
 apps/agent/       Agent, attack scenarios, runner
 apps/mcp/         MCP server, so any agent can call BeforeCoin as a tool
+skills/           Agent skill: instructions, real examples, check script
 apps/web/         Owner dashboard
 apps/site/        Website and docs
 apps/mock-world/  Local test issuer for the World flow
