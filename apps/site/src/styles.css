@@ -481,6 +481,14 @@ details[open] > summary::after { content: "-"; }
   /* Links inside text keep their line height and get a bigger hit area. */
   .hero-note a, .faq-head p a, .foot-note a { display: inline-block; padding: 12px 5px; margin: -12px -5px; }
 
+  /* A docs table stacks, so a long name stays in one piece instead of breaking mid-word. */
+  .prose thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .prose table, .prose tbody, .prose tr, .prose td { display: block; width: 100%; }
+  .prose tr { padding: 12px; border-bottom: 1px solid var(--line); }
+  .prose tbody tr:last-child { border-bottom: 0; }
+  .prose td, .prose tbody tr:last-child td { padding: 0; border: 0; }
+  .prose td + td { margin-top: 6px; }
+  .prose td:first-child code { overflow-wrap: normal; }
 }
 @media (max-width: 374px) {
   /* Too narrow for the button, so it moves into the menu. */
