@@ -32,9 +32,9 @@ function listen(fetch: (r: Request) => Response | Promise<Response>, port: numbe
 }
 
 export async function startHarness(
-  options: { review?: ReviewConfig[]; deadVerifier?: boolean; x402?: boolean; forkUrl?: string } = {},
+  options: { review?: ReviewConfig[]; deadVerifier?: boolean; x402?: boolean; forkUrl?: string; anvilPort?: number; attestForwarder?: string } = {},
 ): Promise<Harness> {
-  const anvilPort = await freePort();
+  const anvilPort = options.anvilPort ?? (await freePort());
   const { child: anvil, rpcUrl } = await startAnvil(anvilPort, options.forkUrl);
   const deploymentFile = resolve(ROOT, "deployments", `test-${anvilPort}.json`);
 
@@ -50,7 +50,7 @@ export async function startHarness(
     });
   }
   try {
-    deployLocal(rpcUrl, deploymentFile, options.forkUrl ? { ...V4_SEPOLIA, USDC: CIRCLE_USDC_SEPOLIA, RESOLVER: RESOLVER_SET_LATER } : {});
+    deployLocal(rpcUrl, deploymentFile, options.forkUrl ? { ...V4_SEPOLIA, USDC: CIRCLE_USDC_SEPOLIA, RESOLVER: RESOLVER_SET_LATER, ...(options.attestForwarder ? { ATTEST_FORWARDER: options.attestForwarder } : {}) } : {});
   } catch (error) {
     // Nothing else holds this chain yet, so a failed deploy would leave it running forever.
     anvil.kill();

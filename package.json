@@ -13,6 +13,7 @@
     "start:public": "tsx scripts/public.ts",
     "deploy:sepolia": "tsx scripts/sepolia.ts",
     "review:0g": "tsx scripts/0g-review.ts",
+    "cre:simulate": "tsx scripts/cre-simulate.ts",
     "test:cre": "cd cre/attest && bun install --frozen-lockfile && bun test",
     "test:fork": "SEPOLIA_FORK_URL=${SEPOLIA_FORK_URL:-https://ethereum-sepolia-rpc.publicnode.com} vitest run --no-file-parallelism tests/ens-fork.test.ts tests/sepolia-fork.test.ts"
   },

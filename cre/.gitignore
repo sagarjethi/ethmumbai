@@ -2,3 +2,6 @@ node_modules/
 *.wasm
 attest/config.json
 .env
+attest/attest.js
+attest/.cre_build_tmp.js
+.last-simulation.txt

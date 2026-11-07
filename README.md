@@ -75,10 +75,13 @@ Only an approved creator can open a pool on the hook, and the owner lists the po
 
 | What | Where |
 |---|---|
-| The workflow | [`attestDecision`](cre/attest/attest.ts#L96) |
-| Its checks | [`evaluateAttestation`](packages/shared/src/attestation.ts#L66) |
+| The workflow | [`attestDecision`](cre/attest/attest.ts#L181) |
+| Its checks | [`evaluateAttestation`](packages/shared/src/attestation.ts#L68) |
 | Where its reports land | [`ClearanceLedger.onReport`](contracts/src/ClearanceLedger.sol) |
 | Where its reports get enforced | [`NotAttested`](contracts/src/ClearanceHook.sol#L190) |
+| External price sources, with keys from CRE secrets | [`PRICE_SOURCES`](cre/attest/attest.ts#L109), [`secrets.yaml`](cre/secrets.yaml) |
+| How sources get compared, failing closed | [`compareSources`](packages/shared/src/attestation.ts#L106) |
+| The simulation, on a throwaway Sepolia fork | [`scripts/cre-simulate.ts`](scripts/cre-simulate.ts) |
 
 ### x402
 
@@ -169,7 +172,8 @@ What's proven, and what isn't:
 |---|---|
 | Hook, account, verifiers, API, scenarios | Tested end to end on a local chain |
 | Real v4, ENSv2 and Circle USDC | Every scenario passes on a Sepolia fork, including the smart account's ERC-1271 payment through x402. Not yet deployed to Sepolia |
-| CRE workflow | Compiles to WASM and passes on the SDK's mock runtime. `cre workflow simulate` needs a logged-in account and hasn't run yet |
+| CRE workflow | Compiles to WASM with `cre workflow build` and passes on the SDK's mock runtime. `cre workflow simulate` needs a logged-in account and hasn't run yet. `pnpm cre:simulate` is ready to run it. Up to that command, the script's `--prepare` run produced a real clearance on a Sepolia fork, and the local attestor attested it through the mock forwarder's address |
+| CRE price sources | Tested against mocks of each source's documented reply. CoinGecko's and Coinbase's reply shapes were checked against live keyless replies. CoinMarketCap's comes from its docs, since no key was available. No keyed request has been made |
 | World ID | Runs against a local test issuer that proves nobody's humanity. Not yet run against World's sandbox |
 | Model review | Adapters tested against stub servers. Not yet run with real provider keys |
 | 0G review | Tested against a mock of the Router's documented format, through the full stack. No live 0G inference has run, so there is no real request id yet, and glm-5.3's output and latency are unchecked |
@@ -185,7 +189,8 @@ Known limits:
 - **Hook attestation thresholds are in raw input units**, so selling tWETH nearly always needs an attestation. This fails closed.
 - **One agent per deployment.** The verifiers read one resolver, so more agents need their own deployment for now.
 - **The dashboard's admin token** is held by its dev server, which binds to localhost. A hosted version needs real owner sign-in first.
-- **GoPlus and CoinGecko aren't used**, because they have no data for Sepolia test tokens. The bytecode rule and Quoter do this job on testnet.
+- **GoPlus isn't used**, because it has no data for Sepolia test tokens. The bytecode rule and Quoter do this job on testnet.
+- **The CRE price check is on ETH/USD, not the pool's price.** Testnet tokens have no market, so it refuses when outside sources disagree, and doesn't yet compare them with the pool. Only the workflow runs it, because `LocalAttestor` has no CRE secrets.
 - **0G review is optional, and it can only refuse.** Rules still decide without it, and in a 2-of-3 quorum one verifier's veto doesn't stop a trade on its own. `tee_verified` is the Router's own claim. Independent checking with 0G's SDK isn't built, though the id it needs is recorded.
 - **The contracts haven't had an external audit.** Don't put real funds behind them.
 
@@ -198,12 +203,18 @@ set -a; source .env; set +a
 pnpm deploy:sepolia
 ```
 
-To run the CRE workflow, log in with `cre login`, copy `cre/attest/config.example.json` to `config.json`, fill in the addresses, then:
+To simulate the CRE workflow, which needs no deployment or funds:
 
 ```bash
-cd cre
-cre workflow simulate ./attest --target local-simulation --non-interactive --trigger-index 0 --http-payload '{"decisionId":"<id>"}' --broadcast
+~/.cre/bin/cre login
+export COINGECKO_API_KEY=<your key> COINMARKETCAP_API_KEY=<your key>
+pnpm cre:simulate
 ```
+
+This starts a throwaway Sepolia fork, deploys to it, gets a real clearance and runs `cre workflow simulate --broadcast` against that fork.
+On an attestation it saves the scrubbed output to `docs/cre-simulation.txt`.
+Without both keys, the workflow writes no attestation.
+Against live Sepolia, deploy with `pnpm deploy:sepolia`, copy `cre/attest/config.example.json` to `config.json`, fill in the addresses, and use `--target local-simulation`.
 
 ## Layout
 

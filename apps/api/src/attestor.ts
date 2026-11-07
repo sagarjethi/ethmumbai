@@ -40,7 +40,7 @@ export interface Attestor {
 
 const Q192 = 2n ** 192n;
 
-/** The same checks as the CRE workflow, run in-process so local mode needs no CRE account. */
+/** The CRE workflow's on-chain checks, run in-process so local mode needs no CRE account. External price sources need CRE secrets, so they run only in the workflow. */
 export class LocalAttestor implements Attestor {
   constructor(
     private client: PublicClient,
