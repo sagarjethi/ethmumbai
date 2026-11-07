@@ -83,7 +83,8 @@ function build(): { siteDir: string; dashboardDir: string } {
     if (/\.(woff2?|png|jpe?g|webp|ico|mp4|gif)$/.test(file)) continue;
     const text = readFileSync(file, "utf8");
     if (text.includes(adminToken)) throw new Error(`The admin token is in a built file: ${file}`);
-    if (/https?:\/\/(127\.0\.0\.1|localhost)/.test(text)) throw new Error(`A local URL is in a built file: ${file}`);
+    // The origin itself is allowed, because a local rehearsal has a local public origin.
+    if (/https?:\/\/(127\.0\.0\.1|localhost)/.test(text.replaceAll(publicOrigin, ""))) throw new Error(`A local URL is in a built file: ${file}`);
   }
   return { siteDir, dashboardDir };
 }
