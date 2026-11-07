@@ -116,16 +116,8 @@ export const PRICE_SOURCES: PriceSource[] = [
     price: (body) => body?.ethereum?.usd,
   },
   {
-    name: "coinmarketcap",
-    secretId: "COINMARKETCAP_API_KEY",
-    keyHeader: "X-CMC_PRO_API_KEY",
-    required: true,
-    url: "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?id=1027",
-    price: (body) => (body?.data?.[0]?.id === 1027 ? body.data[0].quote?.find?.((q: any) => q?.symbol === "USD")?.price : undefined),
-  },
-  {
     name: "coinbase",
-    required: false,
+    required: true,
     url: "https://api.coinbase.com/v2/prices/ETH-USD/spot",
     price: (body) => (body?.data?.base === "ETH" && body?.data?.currency === "USD" ? body.data.amount : undefined),
   },
