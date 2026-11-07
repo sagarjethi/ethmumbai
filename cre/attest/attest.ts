@@ -120,8 +120,8 @@ export const PRICE_SOURCES: PriceSource[] = [
     secretId: "COINMARKETCAP_API_KEY",
     keyHeader: "X-CMC_PRO_API_KEY",
     required: true,
-    url: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=1027&convert=USD",
-    price: (body) => body?.data?.["1027"]?.quote?.USD?.price,
+    url: "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?id=1027",
+    price: (body) => (body?.data?.[0]?.id === 1027 ? body.data[0].quote?.find?.((q: any) => q?.symbol === "USD")?.price : undefined),
   },
   {
     name: "coinbase",

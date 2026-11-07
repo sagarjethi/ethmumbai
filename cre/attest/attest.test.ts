@@ -55,7 +55,7 @@ function runtimeWith(secrets: Record<string, string> = KEYS, overrides: Partial<
 /** What each source's real API replies, shaped as its docs and live replies show. */
 const REPLIES = {
   coingecko: (price: unknown) => ({ ethereum: { usd: price } }),
-  coinmarketcap: (price: unknown) => ({ status: { error_code: 0 }, data: { "1027": { id: 1027, symbol: "ETH", quote: { USD: { price } } } } }),
+  coinmarketcap: (price: unknown) => ({ status: { error_code: "0" }, data: [{ id: 1027, symbol: "ETH", quote: [{ symbol: "USD", price }] }] }),
   coinbase: (price: unknown) => ({ data: { amount: price, base: "ETH", currency: "USD" } }),
 };
 type Reply = { status?: number; body?: unknown; raw?: string };
@@ -331,6 +331,11 @@ describe("attest workflow", () => {
       const m = setup({ market: { coinbase: { status: 503, raw: "" } } });
       attestDecision(runtimeWith(), "d1");
       expect(statusOf(m.written()!)).toBe(1);
+    });
+
+    test("writes nothing when CoinMarketCap answers for another coin", () => {
+      const m = setup({ market: { coinmarketcap: { body: { data: [{ id: 1, symbol: "BTC", quote: [{ symbol: "USD", price: 2246 }] }] } } } });
+      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coinmarketcap");
     });
 
     test("ignores a Coinbase reply for another pair", () => {
