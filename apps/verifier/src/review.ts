@@ -67,6 +67,7 @@ function buildCall(config: Required<Pick<ReviewConfig, "model" | "apiKey">> & Re
       text: (json) => json.choices?.[0]?.message?.content,
     };
   }
+  if (provider !== "google") throw new Error(`unknown model provider: ${provider}`);
   return {
     url: `${baseUrl ?? "https://generativelanguage.googleapis.com"}/v1beta/models/${model}:generateContent`,
     headers: { "x-goog-api-key": apiKey },

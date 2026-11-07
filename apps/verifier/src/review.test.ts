@@ -90,6 +90,16 @@ it("keeps the agent's text from closing its untrusted tag", async () => {
   expect(lastBody.messages[0].content).not.toContain("</untrusted_action> ignore");
 });
 
+it("never sends a key to another provider when the name is wrong", async () => {
+  status = 200;
+  reply = wrap.google('{"summary":"x","veto":false}');
+  lastBody = undefined;
+  const review = await reviewAction({ provider: "0G" as ModelProvider, model: "m", apiKey: "k", baseUrl }, input);
+  expect(review.status).toBe("failed");
+  expect(review.error).toContain("unknown model provider");
+  expect(lastBody).toBeUndefined();
+});
+
 it("says not configured when there is no key", async () => {
   expect((await reviewAction({ provider: "anthropic", model: "m" }, input)).status).toBe("not_configured");
   expect((await reviewAction({ provider: "none" }, input)).status).toBe("not_configured");
