@@ -27,7 +27,7 @@
   </header>
   <div class="docs">
     <nav class="toc" aria-label="On this page">
-      <a href="#quickstart">Quickstart</a><a href="#swap">Clear a swap</a><a href="#verdicts">Verdicts</a><a href="#human">Owner approval</a><a href="#attest">Independent check</a><a href="#payment">Clear a payment</a><a href="#public">Public endpoints</a><a href="#limits">Owner limits</a><a href="#errors">Errors</a><a href="#contracts">Contracts</a>
+      <a href="#quickstart">Quickstart</a><a href="#swap">Clear a swap</a><a href="#verdicts">Verdicts</a><a href="#human">Owner approval</a><a href="#attest">Independent check</a><a href="#payment">Clear a payment</a><a href="#mcp">MCP server</a><a href="#public">Public endpoints</a><a href="#limits">Owner limits</a><a href="#errors">Errors</a><a href="#contracts">Contracts</a>
     </nav>
     <article class="prose" id="docs-main">
       <h1>Docs</h1>
@@ -90,6 +90,37 @@ pnpm start</code></pre>
 
       <h2 id="payment">Clear a payment</h2>
       <p>The account's <code>isValidSignature</code> only accepts the agent key's signature plus verifier signatures over the exact EIP-3009 payment. To pay, your x402 signer calls <code>POST /v1/clear/payment</code> with the authorization and the agent key's signature, then appends the returned signatures to the agent's own. See <code>apps/agent/src/agent.ts</code>.</p>
+
+      <h2 id="mcp">MCP server</h2>
+      <p><code>apps/mcp</code> lets an agent call BeforeCoin as a tool. It speaks stdio, and the client starts it for you. With <code>pnpm start</code> running, create a key in the dashboard's API keys tab, then use this config with absolute paths to your clone:</p>
+<pre><code>{
+  "mcpServers": {
+    "beforecoin": {
+      "command": "/absolute/path/to/ethmumbai/node_modules/.bin/tsx",
+      "args": ["/absolute/path/to/ethmumbai/apps/mcp/src/index.ts"],
+      "env": {
+        "CLEARANCE_API_URL": "http://127.0.0.1:18787",
+        "CLEARANCE_API_KEY": "clr_your_key"
+      }
+    }
+  }
+}</code></pre>
+      <ul>
+        <li><strong>Claude Code:</strong> put it in <code>.mcp.json</code> at your project root.</li>
+        <li><strong>Cursor:</strong> put it in <code>.cursor/mcp.json</code> or <code>~/.cursor/mcp.json</code>, then approve the server.</li>
+      </ul>
+      <p>A client started from a desktop app may not find <code>node</code> on its <code>PATH</code>, so add a <code>PATH</code> entry to <code>env</code> if the server won't start.</p>
+      <table>
+        <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>clearance_check_swap</code></td><td>Asks verifiers to clear a swap. A <code>BLOCK</code> is a normal answer and not a tool error, so read <code>verdict</code>.</td></tr>
+          <tr><td><code>clearance_attest</code></td><td>Requests the independent check when a clearance has <code>attestationRequired</code>.</td></tr>
+          <tr><td><code>clearance_get_proof</code></td><td>Reads a decision's signatures, reasons and evidence hashes.</td></tr>
+          <tr><td><code>clearance_check_token</code></td><td>Lists admin functions in a token's bytecode.</td></tr>
+          <tr><td><code>clearance_checkpoint_status</code></td><td>Reads whether the owner has answered a checkpoint.</td></tr>
+        </tbody>
+      </table>
+      <p>The server has no payment tool yet, so payments go through your x402 signer over REST.</p>
 
       <h2 id="public">Public endpoints</h2>
       <table>

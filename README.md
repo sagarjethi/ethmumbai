@@ -96,6 +96,36 @@ Only an approved creator can open a pool on the hook, and the owner lists the po
 | A bad TEE signature, an empty balance or an outage can't approve anything | [`tests/adversarial.test.ts`](tests/adversarial.test.ts#L372) |
 | One live review, printing its request id | [`scripts/0g-review.ts`](scripts/0g-review.ts) |
 
+## Connect an agent over MCP
+
+`apps/mcp` is an MCP server with five tools, so an agent can call BeforeCoin as a tool: `clearance_check_swap`, `clearance_attest`, `clearance_get_proof`, `clearance_check_token` and `clearance_checkpoint_status`.
+It speaks stdio, and the client starts it for you.
+
+With `pnpm start` running, create a key in the dashboard's API keys tab, then use this config with absolute paths to your clone:
+
+```json
+{
+  "mcpServers": {
+    "beforecoin": {
+      "command": "/absolute/path/to/ethmumbai/node_modules/.bin/tsx",
+      "args": ["/absolute/path/to/ethmumbai/apps/mcp/src/index.ts"],
+      "env": {
+        "CLEARANCE_API_URL": "http://127.0.0.1:18787",
+        "CLEARANCE_API_KEY": "clr_your_key"
+      }
+    }
+  }
+}
+```
+
+- **Claude Code:** put it in `.mcp.json` at your project root.
+- **Cursor:** put it in `.cursor/mcp.json` or `~/.cursor/mcp.json`, then approve the server.
+
+Both were checked with their own CLIs, `claude mcp list` and `cursor-agent mcp list-tools`.
+A client started from a desktop app may not find `node` on its `PATH`, so add a `PATH` entry to `env` if the server won't start.
+A `BLOCK` is a normal answer and not a tool error, so the agent reads `verdict`.
+The server has no payment tool yet, so payments go through your x402 signer over REST.
+
 ## Tests
 
 ```bash
