@@ -8,6 +8,8 @@ export type MockWorldConfig = {
   issuer: string;
   clientId: string;
   sub: string;
+  /** Where a browser reaches this issuer, when that differs from `issuer`, which stays the name inside tokens. */
+  publicUrl?: string;
 };
 
 type PendingAuth = {
@@ -33,7 +35,7 @@ export async function mockWorldApp(config: MockWorldConfig) {
   app.get("/.well-known/openid-configuration", (c) =>
     c.json({
       issuer: config.issuer,
-      authorization_endpoint: `${config.issuer}/authorize`,
+      authorization_endpoint: `${config.publicUrl ?? config.issuer}/authorize`,
       token_endpoint: `${config.issuer}/token`,
       jwks_uri: `${config.issuer}/jwks.json`,
     }),
@@ -70,7 +72,7 @@ export async function mockWorldApp(config: MockWorldConfig) {
 <main><span class="tag">Test issuer, not World ID</span>
 <h1>Approve this agent action?</h1>
 <p>Local stand-in for a World ID step-up. On Sepolia this screen is the real World ID flow.</p>
-<form method="post" action="/decide"><input type="hidden" name="id" value="${id}">
+<form method="post" action="${config.publicUrl ?? ""}/decide"><input type="hidden" name="id" value="${id}">
 <button name="decision" value="approve">Approve</button><button name="decision" value="deny">Deny</button></form></main>`);
   });
 
