@@ -490,7 +490,7 @@ details[open] > summary::after { content: "-"; }
   .prose td + td { margin-top: 6px; }
   .prose td:first-child code { overflow-wrap: normal; }
 }
-@media (max-width: 374px) {
+@media (max-width: 400px) {
   /* Too narrow for the button, so it moves into the menu. */
   .nav-end .button.small { display: none; }
   .nav-links a.nav-narrow { display: block; }
