@@ -817,12 +817,12 @@ function Keys() {
       {created?.secret && (
         <div className="secret" role="status">
           <h2>Copy this key now</h2>
-          <p>It won't be shown again. Only its hash is stored.</p>
+          <p>It won't be shown again. Only its hash is stored. Replace <code>YOUR_API_HOST</code> below with the address of your API.</p>
           <div className="secret-row">
             <code>{created.secret}</code>
             <CopyButton key={created.secret} value={created.secret} />
           </div>
-          <pre>{`curl -X POST http://127.0.0.1:18787/v1/clear/swap \\
+          <pre>{`curl -X POST https://YOUR_API_HOST/v1/clear/swap \\
   -H "authorization: Bearer ${created.secret}" \\
   -H "content-type: application/json" \\
   -d @swap.json`}</pre>
