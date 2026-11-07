@@ -8,5 +8,6 @@ contracts/out/
 contracts/cache/
 contracts/broadcast/
 deployments/local.json
+deployments/public.json
 *.log
 deployments/test-*.json
