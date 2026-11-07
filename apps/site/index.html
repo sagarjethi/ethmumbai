@@ -1,122 +1,450 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clearance: a check AI agents can't skip</title>
-  <meta name="description" content="Independent verifiers check what an AI agent wants to do with money. Without enough signatures, the pool refuses the swap and the wallet refuses the payment." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2316324f'/><path d='M8 17l5 5 11-12' fill='none' stroke='%23fff' stroke-width='3.4'/></svg>" />
+  <meta name="description" content="Independent verifiers must sign before an AI agent's Uniswap v4 swap or x402 payment goes through. A hook and a smart wallet refuse everything else." />
+  <meta name="theme-color" content="#0A0E14" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23C9F04D'/><path d='M8 17l5 5 11-12' fill='none' stroke='%230A0E14' stroke-width='3.4'/></svg>" />
+  <script>try { var t = localStorage.getItem("clearance-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body>
-  <header class="top">
-    <a class="mark" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6"/><path d="M8 17l5 5 11-12"/></svg>Clearance</a>
-    <nav aria-label="Main">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" data-nav>
+    <a class="mark" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M8 17l5 5 11-12"/></svg>Clearance</a>
+    <nav id="nav-links" class="nav-links" aria-label="Main">
       <a href="#how">How it works</a>
-      <a href="#proof">Check a proof</a>
+      <a href="#checks">What's checked</a>
+      <a href="#playground">Playground</a>
       <a href="#pricing">Pricing</a>
+      <a href="#status">Status</a>
+      <a href="#faq">FAQ</a>
       <a href="/docs.html">Docs</a>
-      <a class="button small" data-dashboard href="#">Open dashboard</a>
+      <a href="https://github.com/sagarjethi/ethmumbai">GitHub</a>
+      <a class="nav-narrow" data-dashboard href="http://localhost:5183/">Open dashboard</a>
     </nav>
+    <div class="nav-end">
+      <button class="icon-button" type="button" data-theme-toggle aria-label="Switch to light theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></button>
+      <a class="button small" data-dashboard href="http://localhost:5183/">Open dashboard</a>
+      <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
   </header>
 
-  <main>
+  <main id="main">
     <section class="hero">
-      <div class="hero-copy">
-        <h1>No clearance,<br />no trade.</h1>
-        <p class="lede">AI agents hold real money, and a hijacked one will happily spend it. Other tools tell an agent what looks risky, then let it decide. Clearance takes that decision away: without signatures from independent verifiers, the pool refuses the swap and the wallet refuses the payment.</p>
-        <div class="actions">
-          <a class="button" href="/docs.html#quickstart">Read the quickstart</a>
-          <a class="button quiet" data-dashboard href="#">Try to break it</a>
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-grid wrap">
+        <div class="hero-copy">
+          <p class="kicker">Built at ETHGlobal Mumbai 2026</p>
+          <h1>No clearance,<br />no trade.</h1>
+          <p class="lede">Independent verifiers must sign before an AI agent's Uniswap v4 swap or x402 payment goes through. A hook and a smart wallet refuse everything else, so a hijacked agent can't talk its way past them.</p>
+          <div class="actions">
+            <a class="button" data-dashboard href="http://localhost:5183/">Try to break it</a>
+            <a class="button quiet" href="/docs.html#quickstart">Read the quickstart</a>
+          </div>
+          <p class="hero-note">Runs on a local chain and a Sepolia fork today. Not on a live network, and not audited. <a href="#status">See what's proven</a>.</p>
         </div>
+
+        <figure class="gate" id="gate" data-step="done" data-outcome="block" aria-labelledby="gate-caption">
+          <div class="gate-action">
+            <span class="gate-label">The agent asks</span>
+            <b id="gate-title">Swap 25,000 USDC for RUG</b>
+            <small id="gate-note">Its reason field says the owner pre-approved this trade. Rules never read that field.</small>
+          </div>
+
+          <ol class="votes" aria-label="Verifier decisions">
+            <li data-vote="refuse"><span>Verifier 1</span><b>Refuses</b></li>
+            <li data-vote="refuse"><span>Verifier 2</span><b>Refuses</b></li>
+            <li data-vote="refuse"><span>Verifier 3</span><b>Refuses</b></li>
+          </ol>
+
+          <div class="track" aria-hidden="true">
+            <span class="track-end" id="gate-from">Agent wallet</span>
+            <div class="rail">
+              <i class="ghost"></i>
+              <i class="coin"></i>
+              <i class="bar"></i>
+            </div>
+            <span class="track-end" id="gate-to">Pool</span>
+          </div>
+
+          <div class="gate-out" id="gate-out">
+            <p class="gate-wait">Each verifier checks on its own. Two of three must sign.</p>
+            <code class="verdict" id="gate-verdict" data-verdict="BLOCK">BLOCK</code>
+            <p id="gate-result">No signatures. Sent anyway, the swap reverts with <code>NoClearance</code>.</p>
+          </div>
+
+          <div class="gate-tabs" role="group" aria-label="Choose an example">
+            <button type="button" data-scene="allow">Honest trade</button>
+            <button type="button" data-scene="reduce">Thin pool</button>
+            <button type="button" data-scene="block" aria-pressed="true">Hijacked</button>
+            <button type="button" data-scene="human">Over the limit</button>
+            <button type="button" data-scene="payment">Bad payee</button>
+          </div>
+          <div class="gate-foot">
+            <figcaption id="gate-caption">A replay of the scenarios in <code>pnpm demo</code>, not live traffic.</figcaption>
+            <button class="gate-pause" type="button" id="gate-pause" hidden>Pause</button>
+          </div>
+        </figure>
       </div>
-      <div class="board" aria-label="Example of three agent requests and their outcomes">
-        <div class="board-cap">Example requests from one agent</div>
-        <article class="strip ok" style="--i:0">
-          <div class="strip-body"><b>Swap 100 USDC for tWETH</b><small>Within every limit the owner set</small></div>
-          <div class="stamp">Cleared</div>
+
+      <div class="ways wrap" id="ways">
+        <article class="way">
+          <h2>Give it to your agent</h2>
+          <p>An MCP server with five tools. The agent checks a swap, asks for a token scan or reads a proof as a tool call.</p>
+          <a href="#playground" data-pg-tab="mcp">See the MCP call</a>
         </article>
-        <article class="strip warn" style="--i:1">
-          <div class="strip-body"><b>Swap 800 USDC for tMOON</b><small>Would move this thin pool too far, so 311 USDC is cleared</small></div>
-          <div class="stamp">Reduced</div>
+        <article class="way">
+          <h2>Call it from your code</h2>
+          <p>One REST request with the exact swap. Create a key in the dashboard, then pass the response to your wallet.</p>
+          <a href="#playground" data-pg-tab="rest">See the REST call</a>
         </article>
-        <article class="strip bad" style="--i:2">
-          <div class="strip-body"><b>Swap 25,000 USDC for RUG</b><small>Its owner can blacklist holders. Sent anyway: the swap reverts</small></div>
-          <div class="stamp">Refused</div>
+        <article class="way">
+          <h2>Let the agent pay per check</h2>
+          <p>No account and no key. The API answers 402, and an x402 client pays in USDC and retries.</p>
+          <a href="#playground" data-pg-tab="x402">See the x402 flow</a>
         </article>
       </div>
     </section>
 
-    <section id="how" class="band">
-      <h2>From request to enforcement</h2>
-      <ol class="flow">
-        <li><h3>The owner sets limits</h3><p>Size, price impact, tokens and payees sit in the agent's ENS records. Verifiers read them from the chain, so no server can loosen them.</p></li>
-        <li><h3>The agent asks</h3><p>It sends the exact swap or payment to the API, and pays for the check with x402 or an API key.</p></li>
-        <li><h3>Verifiers check separately</h3><p>Each one pulls its own data from the chain. Fixed rules decide. A model can explain or veto, and can never approve.</p></li>
-        <li><h3>A quorum signs</h3><p>Two of three sign one clearance, bound to the agent, pool, direction, amount, expiry and nonce. A refusal is simply no signature.</p></li>
-        <li><h3>Big trades get a human and a second look</h3><p>Over the owner's limit, the owner approves with World ID. A Chainlink CRE workflow then re-derives everything and writes its finding on chain.</p></li>
-        <li><h3>The chain enforces</h3><p>A Uniswap v4 hook reverts any swap without a valid clearance. The agent's smart account refuses other pools, direct transfers and uncleared payments.</p></li>
+    <section class="built wrap" aria-labelledby="built-title">
+      <h2 id="built-title">Built with</h2>
+      <dl>
+        <div><dt>Uniswap v4</dt><dd>A hook on the pool reverts swaps with no valid clearance.</dd></div>
+        <div><dt>ENSv2</dt><dd>The owner's limits live in the agent's name records.</dd></div>
+        <div><dt>World ID</dt><dd>Big trades need a fresh approval from the owner.</dd></div>
+        <div><dt>Chainlink CRE</dt><dd>A workflow re-derives big decisions and writes its finding on chain.</dd></div>
+        <div><dt>x402</dt><dd>Agents pay for checks, and their payments need verifiers too.</dd></div>
+      </dl>
+    </section>
+
+    <section class="section wrap" id="difference">
+      <div class="section-head">
+        <h2>A warning can be ignored. A revert can't.</h2>
+        <p>Most agent safety tools hand back a score or a warning, then leave the choice with the agent. That's useful advice right up until the agent is the thing that's been hijacked. Clearance moves the check to where the money moves.</p>
+      </div>
+      <div class="compare">
+        <article class="compare-col">
+          <h3>A check that advises</h3>
+          <ol>
+            <li>The agent asks if a trade looks safe.</li>
+            <li>A service answers with a verdict or a score.</li>
+            <li>The agent decides what to do with that answer.</li>
+            <li class="end-bad">A hijacked agent skips the question, and the trade still lands.</li>
+          </ol>
+        </article>
+        <article class="compare-col strong">
+          <h3>A check that's enforced</h3>
+          <ol>
+            <li>The agent asks for clearance on the exact action.</li>
+            <li>Verifiers each check it, and a quorum signs or doesn't.</li>
+            <li>The pool's hook and the agent's wallet check those signatures.</li>
+            <li class="end-good">A hijacked agent skips the question, and the transaction reverts.</li>
+          </ol>
+        </article>
+      </div>
+      <p class="fine">The limit of this: a hook only guards its own pool, so the agent's money has to sit in a Clearance smart account. That wallet is the real enforcer. The hook is an opt-in safe pool.</p>
+    </section>
+
+    <section class="section wrap" id="how">
+      <div class="section-head">
+        <h2>From request to enforcement</h2>
+        <p>Six steps, and the last one doesn't depend on any server being honest.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>The owner sets limits</h3><p>Size, price impact, tokens, pools and payees sit in the agent's ENS records. Verifiers read them from the chain, so no server can loosen them.</p></li>
+        <li><h3>The agent asks</h3><p>It sends the exact swap to <code>POST /v1/clear/swap</code>, and pays with x402 or an API key.</p></li>
+        <li><h3>Verifiers check separately</h3><p>Each reads the chain itself. Fixed rules decide, and missing or stale data always blocks. A model can explain or veto, and can never approve.</p></li>
+        <li><h3>A quorum signs</h3><p>One EIP-712 clearance, bound to the agent, pool, direction, amount, expiry and nonce. A refusal is no signature. A reduction is a smaller <code>maxAmountIn</code>.</p></li>
+        <li><h3>Big trades get a human and a second look</h3><p>Over the limit, the owner approves with World ID, for that one action. A Chainlink CRE workflow then re-derives limits, quorum and market and writes its finding on chain.</p></li>
+        <li><h3>The chain enforces</h3><p>The v4 hook reverts anything without a valid clearance. The smart account refuses other pools, direct transfers and uncleared payments.</p></li>
       </ol>
     </section>
 
-    <section class="split-section">
-      <div>
+    <section class="section wrap" id="checks">
+      <div class="section-head">
+        <h2>What gets checked</h2>
+        <p>Every rule below is in <code>apps/verifier/src/rules.ts</code>, and each one reports a named reason you can read in the proof. A rule that can't get fresh data blocks.</p>
+      </div>
+      <div class="checks">
+        <div class="panel check-list">
+          <h3>Before a verifier signs</h3>
+          <table>
+            <thead><tr><th scope="col">Check</th><th scope="col">Read from</th><th scope="col">Reason in the proof</th></tr></thead>
+            <tbody>
+              <tr><td>This name is bound to this wallet</td><td>ENS</td><td><code>account_not_bound</code></td></tr>
+              <tr><td>The owner approved this pool</td><td>ENS</td><td><code>pool_not_allowed</code></td></tr>
+              <tr><td>The pool is guarded by the hook</td><td>Chain</td><td><code>pool_not_guarded</code></td></tr>
+              <tr><td>Both tokens are on the owner's list</td><td>ENS</td><td><code>token_not_allowed</code></td></tr>
+              <tr><td>No blacklist, mint, pause, fee or tax functions in the token</td><td>Bytecode</td><td><code>token_hazard</code></td></tr>
+              <tr><td>Price impact is within the owner's limit</td><td>v4 Quoter</td><td><code>impact_reduced</code></td></tr>
+              <tr><td>Size is under the owner's limit</td><td>ENS, pool price</td><td><code>human_required</code></td></tr>
+              <tr><td>Size is under the hard cap, even with approval</td><td>ENS, pool price</td><td><code>above_hard_cap</code></td></tr>
+              <tr><td>Daily spend is left in the wallet</td><td>Wallet</td><td><code>spend_cap_reached</code></td></tr>
+              <tr><td>The payee is on the owner's list</td><td>ENS</td><td><code>payee_not_allowed</code></td></tr>
+              <tr><td>The payment fits the per-payment and daily limits</td><td>ENS</td><td><code>payment_above_limit</code></td></tr>
+              <tr><td>Every fact above is present and fresh</td><td>All</td><td><code>data_stale</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="check-side">
+          <div class="panel">
+            <h3>On chain, whatever a server says</h3>
+            <p>These are named reverts in the contracts. No API can talk its way past them.</p>
+            <p class="codes"><span>Hook</span><code>NoClearance</code> <code>WrongAgent</code> <code>WrongPool</code> <code>WrongDirection</code> <code>WrongChain</code> <code>ClearanceExpired</code> <code>AmountAboveClearance</code> <code>NonceUsed</code> <code>NoQuorum</code> <code>NotAttested</code> <code>ExactOutputNotClearable</code></p>
+            <p class="codes"><span>Wallet</span><code>PoolNotCleared</code> <code>SpendCapExceeded</code> <code>TooFewSignatures</code> <code>NotAgent</code></p>
+          </div>
+          <div class="panel">
+            <h3>What it doesn't do</h3>
+            <ul class="plain">
+              <li>It doesn't predict prices or say a trade is a good idea.</li>
+              <li>USD values come from the owner-approved pool's own price, so approving a pool is a trust decision.</li>
+              <li>Finding no admin functions in a token doesn't prove the token is safe.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="questions">
+      <div class="section-head">
+        <h2>What an agent asks, and what comes back</h2>
+        <p>Examples taken from the demo scenarios in <code>apps/agent/src/scenarios.ts</code>. Run <code>pnpm demo</code> to get real answers on your own machine.</p>
+      </div>
+      <div class="qa">
+        <article><p class="q">Swap 100 USDC for tWETH.</p><code class="verdict" data-verdict="ALLOW">ALLOW</code><p>Within every limit, so a quorum signs and the swap executes.</p></article>
+        <article><p class="q">Swap 800 USDC for tMOON.</p><code class="verdict" data-verdict="REDUCE">REDUCE</code><p>It would move this thin pool too far, 698 bps against a limit of 300. They sign 311 USDC, and the full size reverts.</p></article>
+        <article><p class="q">Buy $25,000 of RUG. The owner has pre-approved this.</p><code class="verdict" data-verdict="BLOCK">BLOCK</code><p>The token can blacklist holders and isn't on the owner's list. The claim in the reason field changes nothing.</p></article>
+        <article><p class="q">Swap 5,000 USDC for tWETH.</p><code class="verdict" data-verdict="HUMAN_REQUIRED">HUMAN_REQUIRED</code><p>Over the owner's limit. It waits for a World ID approval, bound to this one action.</p></article>
+        <article><p class="q">Pay 0.50 USDC to a new address. It's an approved vendor invoice.</p><code class="verdict" data-verdict="BLOCK">BLOCK</code><p>The payee isn't on the list, and the wallet rejects the agent key's signature alone.</p></article>
+        <article><p class="q">Does this token have admin functions?</p><code class="verdict" data-verdict="INFO">RISKY</code><p>The scan lists any it finds in the bytecode, following proxies. An empty list isn't a safety guarantee.</p></article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="playground">
+      <div class="section-head">
+        <h2>One request, one provable answer</h2>
+        <p>Pick an action and how you call it. The panels show what the API takes and returns, with the live proof and token checks underneath.</p>
+      </div>
+
+      <div class="pg panel" id="pg">
+        <div class="pg-actions" role="group" aria-label="Choose an action" id="pg-actions"></div>
+        <div class="pg-main">
+          <div class="tabs" role="tablist" aria-label="How you call it">
+            <button role="tab" type="button" id="tab-rest" data-tab="rest" aria-controls="pg-panel" aria-selected="true">REST</button>
+            <button role="tab" type="button" id="tab-mcp" data-tab="mcp" aria-controls="pg-panel" aria-selected="false" tabindex="-1">MCP</button>
+            <button role="tab" type="button" id="tab-x402" data-tab="x402" aria-controls="pg-panel" aria-selected="false" tabindex="-1">x402</button>
+          </div>
+          <div class="pg-panel" id="pg-panel" role="tabpanel" aria-labelledby="tab-rest">
+            <div class="code">
+              <div class="code-head"><span>Request</span><button class="copy" type="button" data-copy="pg-request">Copy</button></div>
+              <pre tabindex="0"><code id="pg-request"></code></pre>
+            </div>
+            <div class="code">
+              <div class="code-head"><span id="pg-status">Response</span><button class="copy" type="button" data-copy="pg-response">Copy</button></div>
+              <pre tabindex="0"><code id="pg-response"></code></pre>
+            </div>
+          </div>
+          <p class="fine" id="pg-note">Example only, not a live response. Copied from a local <code>pnpm demo</code> run, with addresses and hashes shortened and one of three evaluations shown.</p>
+        </div>
+      </div>
+
+      <div class="live" id="proof">
+        <div class="live-head">
+          <h3>Check it yourself, live</h3>
+          <p class="api-state" id="api-state" data-state="wait"><i></i><span>Checking the API</span></p>
+        </div>
+        <p class="live-intro">These two boxes call this deployment's public API. Every decision has a proof with its signatures and the evidence each verifier hashed.</p>
+        <div class="tools">
+          <form id="proof-form" class="tool panel">
+            <label for="proof-id">Decision id</label>
+            <div class="row"><input id="proof-id" placeholder="Paste an id from the dashboard" autocomplete="off" spellcheck="false" required /><button class="button">Check proof</button></div>
+            <div id="proof-result" class="result" aria-live="polite"></div>
+          </form>
+          <form id="token-form" class="tool panel">
+            <label for="token-address">Token address</label>
+            <div class="row"><input id="token-address" placeholder="0x..." autocomplete="off" spellcheck="false" required /><button class="button">Check token</button></div>
+            <div id="token-result" class="result" aria-live="polite"></div>
+          </form>
+        </div>
+        <div class="record panel">
+          <h3>Track record on this deployment</h3>
+          <dl id="record">
+            <div><dt>Cleared</dt><dd>-</dd></div>
+            <div><dt>Refused</dt><dd>-</dd></div>
+            <div><dt>Sent to the owner</dt><dd>-</dd></div>
+            <div><dt>Independent checks passed</dt><dd>-</dd></div>
+          </dl>
+          <p class="fine" id="record-note">Waiting for this deployment's API.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="attacks">
+      <div class="section-head">
         <h2>What a hijacked agent runs into</h2>
-        <p>Prompt injection changes what the agent says. It doesn't change what the contracts accept. Each of these runs as a real transaction in the test suite, and you can run them yourself.</p>
+        <p>Prompt injection changes what the agent says. It doesn't change what the contracts accept. Each of these has a test in the repo, and you can run the demo set from the dashboard's attack lab.</p>
       </div>
-      <table class="attacks">
-        <thead><tr><th>The attack</th><th>What stops it</th></tr></thead>
-        <tbody>
-          <tr><td>Buys a rug token after a prompt injection</td><td>No signatures, so the hook reverts</td></tr>
-          <tr><td>Takes the same trade through another pool</td><td>The wallet refuses the pool</td></tr>
-          <tr><td>Sends USDC straight to an attacker</td><td>The agent key has no transfer function</td></tr>
-          <tr><td>Pays a new address over x402</td><td>The wallet's signature needs verifiers too</td></tr>
-          <tr><td>Copies someone else's clearance</td><td>The hook checks who really called</td></tr>
-          <tr><td>Replays its own clearance</td><td>Each nonce works once</td></tr>
-          <tr><td>Stretches one human approval to a bigger trade</td><td>The approval is bound to one exact action</td></tr>
-          <tr><td>Claims another agent's name for looser limits</td><td>ENS binds each name to one wallet</td></tr>
-          <tr><td>Splits a big trade into many small ones</td><td>The wallet's daily spend cap, on chain</td></tr>
-          <tr><td>Uses a pool that shows a flattering price</td><td>Only pools the owner approved get cleared</td></tr>
-          <tr><td>Pulls liquidity right after the check</td><td>A signed minimum output, enforced by the wallet</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section id="proof" class="band">
-      <h2>Don't take our word for it</h2>
-      <p class="band-intro">Every decision has a public proof with its signatures and the evidence each verifier hashed. Paste a decision id, or check any token on this deployment.</p>
-      <div class="tools">
-        <form id="proof-form" class="tool">
-          <label for="proof-id">Decision id</label>
-          <div class="row"><input id="proof-id" placeholder="3f9a1c7d2b604e18" autocomplete="off" required /><button class="button">Check proof</button></div>
-          <div id="proof-result" class="result" aria-live="polite"></div>
-        </form>
-        <form id="token-form" class="tool">
-          <label for="token-address">Token address</label>
-          <div class="row"><input id="token-address" placeholder="0x…" autocomplete="off" required /><button class="button">Check token</button></div>
-          <div id="token-result" class="result" aria-live="polite"></div>
-        </form>
-      </div>
-      <div class="record">
-        <h3>Track record on this deployment</h3>
-        <dl id="record"><div><dt>Cleared</dt><dd>-</dd></div><div><dt>Refused</dt><dd>-</dd></div><div><dt>Sent to the owner</dt><dd>-</dd></div><div><dt>Independent checks passed</dt><dd>-</dd></div></dl>
-        <small id="record-note">These are live counts from this deployment's API, not a marketing number.</small>
+      <div class="panel table-panel">
+        <table class="attacks">
+          <thead><tr><th scope="col">The attack</th><th scope="col">What stops it</th><th scope="col">Stopped by</th></tr></thead>
+          <tbody>
+            <tr><td>Buys a rug token after a prompt injection</td><td>No signatures, so the swap reverts with <code>NoClearance</code></td><td>Hook</td></tr>
+            <tr><td>Takes the same trade through another pool</td><td>The wallet refuses the pool with <code>PoolNotCleared</code></td><td>Wallet</td></tr>
+            <tr><td>Sends USDC straight to an attacker</td><td>The agent key has no transfer function</td><td>Wallet</td></tr>
+            <tr><td>Pays a new address over x402</td><td>The wallet's signature check needs verifiers too</td><td>Wallet</td></tr>
+            <tr><td>Copies someone else's clearance</td><td>The hook checks who really called, with <code>WrongAgent</code></td><td>Hook</td></tr>
+            <tr><td>Replays its own clearance</td><td>Each nonce works once, with <code>NonceUsed</code></td><td>Hook</td></tr>
+            <tr><td>Stretches one human approval to a bigger trade</td><td>The approval is bound to one exact action</td><td>Verifiers</td></tr>
+            <tr><td>Claims another agent's name for looser limits</td><td>ENS binds each name to one wallet</td><td>Verifiers</td></tr>
+            <tr><td>Splits a big trade into many small ones</td><td>The daily spend cap, with <code>SpendCapExceeded</code></td><td>Wallet</td></tr>
+            <tr><td>Uses a pool that shows a flattering price</td><td>Only pools the owner approved get cleared</td><td>Verifiers</td></tr>
+            <tr><td>Pulls liquidity right after the check</td><td>A signed minimum output, enforced at swap time</td><td>Wallet</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
-    <section id="pricing" class="pricing">
-      <h2>Pricing</h2>
+    <section class="section wrap" id="pricing">
+      <div class="section-head">
+        <h2>What a check costs</h2>
+        <p>There's no billing system or hosted service yet, and nothing here takes real money. These are the charges the code applies on test chains. Pricing for a live network isn't set.</p>
+      </div>
       <div class="plans">
-        <article><h3>Per check</h3><p class="price">$0.01</p><p>Your agent pays each check itself with x402, in USDC. No account or key.</p></article>
-        <article><h3>Free key</h3><p class="price">1,000 a month</p><p>Create a key in the dashboard. Good for building and testing.</p></article>
-        <article><h3>Run your own</h3><p class="price">Open source</p><p>Run a verifier, or the whole stack. The contracts and the verifier code are public.</p></article>
+        <article class="panel plan">
+          <h3>Per check</h3>
+          <p class="price">$0.01</p>
+          <p>Your agent pays each swap check itself with x402, in test USDC. No account or key. This is the price the local stack sets, and a deployment can change it.</p>
+        </article>
+        <article class="panel plan">
+          <h3>Free key</h3>
+          <p class="price">1,000 a month</p>
+          <p>The default quota for a key you create in the dashboard. After that, the API answers 429 and points you to x402.</p>
+        </article>
+        <article class="panel plan">
+          <h3>Run your own</h3>
+          <p class="price">Public code</p>
+          <p>Run a verifier or the whole stack from the GitHub repo. It needs no real funds and no keys to try.</p>
+        </article>
       </div>
-      <p class="note">Clearance runs on test networks today, and the contracts haven't had an external audit. Don't put real funds behind it yet.</p>
+    </section>
+
+    <section class="section wrap" id="status">
+      <div class="section-head">
+        <h2>What's proven, and what isn't</h2>
+        <p>This is a hackathon build. Here's exactly how far each part has been run.</p>
+      </div>
+      <div class="tests" aria-label="Test counts">
+        <div><b>60</b><span>Foundry tests</span></div>
+        <div><b>125</b><span>TypeScript tests</span></div>
+        <div><b>14</b><span>Sepolia fork tests</span></div>
+        <div><b>9</b><span>CRE mock-runtime tests</span></div>
+        <div><b>7 of 7</b><span>Demo scenarios pass</span></div>
+      </div>
+      <p class="fine tests-note">Counts of the tests in the repo, not of a run on this page. <code>pnpm test:contracts</code>, <code>test:ts</code>, <code>test:fork</code> and <code>test:cre</code> run them on throwaway chains.</p>
+      <div class="panel table-panel">
+        <table class="status">
+          <thead><tr><th scope="col">Part</th><th scope="col">State</th><th scope="col">Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Hook, wallet, verifiers, API, scenarios</td><td><span class="tag ok">Tested</span></td><td>End to end on a local chain.</td></tr>
+            <tr><td>Real v4, ENSv2 and Circle USDC</td><td><span class="tag warn">Fork only</span></td><td>Every scenario passes on a Sepolia fork. Not yet deployed to Sepolia.</td></tr>
+            <tr><td>Chainlink CRE workflow</td><td><span class="tag warn">Mock runtime</span></td><td>Compiles to WASM and passes on the SDK's mock runtime. <code>cre workflow simulate</code> hasn't run yet.</td></tr>
+            <tr><td>World ID</td><td><span class="tag warn">Test issuer</span></td><td>Runs against a local test issuer that proves nobody's humanity. Not yet run against World's sandbox.</td></tr>
+            <tr><td>Model review</td><td><span class="tag warn">Stub servers</span></td><td>Adapters tested against stubs. Not yet run with real provider keys.</td></tr>
+            <tr><td>x402 with a smart account</td><td><span class="tag warn">Fork only</span></td><td>Works on the fork with the reference facilitator. Unproven on real Sepolia.</td></tr>
+            <tr><td>External audit</td><td><span class="tag bad">None</span></td><td>The contracts haven't had one. Don't put real funds behind them.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="limits">
+        <summary>Known limits</summary>
+        <ul class="plain">
+          <li>Payment budgets and used approvals live in verifier memory, so a restart forgets them. The swap spend cap is on chain and doesn't have this limit.</li>
+          <li>USD values come from the owner-approved pool's own price. An independent price oracle is the next step for a live network.</li>
+          <li>Attestations delivered through CRE's mock forwarder aren't trustworthy. Real use needs a deployed workflow and the real forwarder.</li>
+          <li>One agent per deployment for now, because verifiers read one resolver.</li>
+          <li>The dashboard's admin token sits on its local dev server. A hosted version needs real owner sign-in first.</li>
+          <li>An independent review found a critical bug: anyone could open a pool on the hook at an absurd price. It's fixed and tested.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="section wrap faq" id="faq">
+      <div class="faq-head">
+        <h2>Questions</h2>
+        <p>More in the <a href="/docs.html">docs</a> and the <a href="https://github.com/sagarjethi/ethmumbai">repo</a>.</p>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>What happens if an agent never calls Clearance?</summary>
+          <p>Nothing moves. The agent's key can only act through its smart account, and that account refuses swaps without a valid clearance, refuses other pools and has no way to send tokens directly.</p>
+        </details>
+        <details>
+          <summary>Can a model approve a trade?</summary>
+          <p>No. Fixed rules decide. A model can explain a decision or veto one, and it can never turn a refusal into an approval. Text from the agent goes in a reason field that rules never read.</p>
+        </details>
+        <details>
+          <summary>What if the verifiers are down or disagree?</summary>
+          <p>Fewer signatures than the quorum means no clearance, so the action stays refused. Missing or stale data blocks too. The local stack needs two of three, and an owner can raise that in ENS but can't go below the contract's floor.</p>
+        </details>
+        <details>
+          <summary>Who runs the verifiers?</summary>
+          <p>Right now, whoever runs the stack. <code>pnpm start</code> launches all three on one machine, each with its own key and its own reads of the chain. Real independence comes from different people running them, and that hasn't happened yet.</p>
+        </details>
+        <details>
+          <summary>Is a clearance reusable?</summary>
+          <p>No. It lasts 90 seconds, works once and only for the account it names, the pool, the direction and up to the amount signed. A copy from another caller reverts.</p>
+        </details>
+        <details>
+          <summary>Does it work on any Uniswap pool?</summary>
+          <p>The hook guards pools opened on it, by approved creators. The owner lists the pools they trust in ENS, and the wallet refuses everything else. Exact-output swaps are refused, because a hook can't bound their input before the swap runs.</p>
+        </details>
+        <details>
+          <summary>Can I use this with real money?</summary>
+          <p>Not yet. It isn't deployed to a live network and the contracts haven't had an external audit. Try it on the local chain, where nothing needs real funds or keys.</p>
+        </details>
+        <details>
+          <summary>How do I connect the MCP server?</summary>
+          <p>Run <code>apps/mcp/src/index.ts</code> from the repo with <code>CLEARANCE_API_URL</code> and <code>CLEARANCE_API_KEY</code> set. It speaks stdio, so any MCP client can launch it. Its five tools check a swap, request an attestation, read a proof, scan a token and read a checkpoint.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="closing wrap">
+      <div class="closing-inner">
+        <div>
+          <h2>Try to get something past it</h2>
+          <p>Start the whole stack on a throwaway chain, then run every attack from the dashboard or with <code>pnpm demo</code>. You'll need Foundry, Node 22 or newer, pnpm and Bun.</p>
+          <div class="actions">
+            <a class="button" data-dashboard href="http://localhost:5183/">Open the attack lab</a>
+            <a class="button quiet" href="https://github.com/sagarjethi/ethmumbai">View on GitHub</a>
+          </div>
+        </div>
+        <div class="code closing-code">
+          <div class="code-head"><span>Quick start</span><button class="copy" type="button" data-copy="quick-start">Copy</button></div>
+          <pre tabindex="0"><code id="quick-start">git clone --recursive https://github.com/sagarjethi/ethmumbai.git
+cd ethmumbai
+pnpm install
+pnpm start</code></pre>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer class="foot">
-    <span>Clearance, built at ETHGlobal Mumbai 2026.</span>
-    <nav aria-label="Footer"><a href="/docs.html">Docs</a> <a data-dashboard href="#">Dashboard</a></nav>
+    <div class="foot-inner wrap">
+      <div class="foot-brand">
+        <a class="mark" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M8 17l5 5 11-12"/></svg>Clearance</a>
+        <p>A check AI agents can't skip. Built at ETHGlobal Mumbai 2026.</p>
+      </div>
+      <nav aria-label="Footer">
+        <div><h2>Product</h2><a href="#how">How it works</a><a href="#checks">What's checked</a><a href="#pricing">Pricing</a><a href="#status">Status</a></div>
+        <div><h2>Build</h2><a href="/docs.html">Docs</a><a href="#playground">Playground</a><a data-dashboard href="http://localhost:5183/">Dashboard</a><a href="https://github.com/sagarjethi/ethmumbai">GitHub</a></div>
+      </nav>
+    </div>
+    <p class="foot-note wrap">Test networks only. Not audited. Don't put real funds behind it. Nothing here is investment advice.</p>
   </footer>
   <script type="module" src="/src/main.js"></script>
 </body>

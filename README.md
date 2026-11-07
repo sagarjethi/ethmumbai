@@ -13,8 +13,8 @@ You need Foundry, Node 22 or newer, pnpm and Bun.
 Nothing here needs real funds or keys.
 
 ```bash
-git clone --recursive https://github.com/sagarjethi/clearance.git
-cd clearance
+git clone --recursive https://github.com/sagarjethi/ethmumbai.git
+cd ethmumbai
 pnpm install
 pnpm start
 ```
