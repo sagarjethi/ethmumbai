@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit -p .",
     "demo": "tsx apps/agent/src/demo.ts",
     "start": "tsx scripts/up.ts",
+    "start:public": "tsx scripts/public.ts",
     "deploy:sepolia": "tsx scripts/sepolia.ts",
     "review:0g": "tsx scripts/0g-review.ts",
     "test:cre": "cd cre/attest && bun install --frozen-lockfile && bun test",

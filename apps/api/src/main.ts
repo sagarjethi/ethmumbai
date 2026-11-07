@@ -87,6 +87,7 @@ const app = apiApp({
   adminToken: process.env.ADMIN_TOKEN,
   scanToken: (address) => scanTokenFor(client as never, address),
   reportToken: process.env.REPORT_TOKEN,
+  rateLimitPerMinute: process.env.API_RATE_LIMIT_PER_MINUTE ? Number(process.env.API_RATE_LIMIT_PER_MINUTE) : undefined,
   localOwnerWallet: process.env.LOCAL_OWNER_KEY
     ? createWalletClient({ account: privateKeyToAccount(process.env.LOCAL_OWNER_KEY as Hex), chain, transport: http(rpcUrl) })
     : undefined,
