@@ -4,6 +4,7 @@
   "chainSelectorName": "ethereum-testnet-sepolia",
   "chainId": 11155111,
   "gasLimit": "500000",
+  "maxSourceDeviationBps": 100,
   "hook": "0x0000000000000000000000000000000000000000",
   "resolver": "0x0000000000000000000000000000000000000000",
   "verifierSet": "0x0000000000000000000000000000000000000000",

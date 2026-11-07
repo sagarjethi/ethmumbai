@@ -2,6 +2,7 @@ import {
   LATEST_BLOCK_NUMBER,
   bytesToHex,
   consensusIdenticalAggregation,
+  consensusMedianAggregation,
   cre,
   encodeCallMsg,
   getNetwork,
@@ -11,7 +12,7 @@ import {
   type Runtime,
 } from "@chainlink/cre-sdk";
 import { decodeFunctionResult, encodeFunctionData, parseAbi, zeroAddress, type Abi, type Address, type Hex } from "viem";
-import { encodeAttestationReport, evaluateAttestation, type ClearanceRecord } from "../../packages/shared/src/attestation";
+import { compareSources, encodeAttestationReport, evaluateAttestation, type ClearanceRecord, type PriceReading } from "../../packages/shared/src/attestation";
 import type { SwapAction } from "../../packages/shared/src/actions";
 import { decodeTextLookup, resolveAbi, textLookupArgs } from "../../packages/shared/src/ensv2";
 import { parseLimits, RECORD_KEYS, type RawRecords } from "../../packages/shared/src/limits";
@@ -28,6 +29,8 @@ export type Config = {
   quoter: Address;
   stateView: Address;
   ledger: Address;
+  /** The widest spread allowed between external ETH/USD sources. */
+  maxSourceDeviationBps: number;
 };
 
 type Proof = {
@@ -92,6 +95,88 @@ function fetchText(runtime: Runtime<Config>, url: string): string {
     .result();
 }
 
+type PriceSource = {
+  name: string;
+  /** The ID in secrets.yaml, for sources that need a key. */
+  secretId?: string;
+  keyHeader?: string;
+  required: boolean;
+  url: string;
+  price: (body: any) => unknown;
+};
+
+/** ETH/USD, because testnet pool tokens have no market of their own. The keys live in CRE secrets, never in config. */
+export const PRICE_SOURCES: PriceSource[] = [
+  {
+    name: "coingecko",
+    secretId: "COINGECKO_API_KEY",
+    keyHeader: "x-cg-demo-api-key",
+    required: true,
+    url: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+    price: (body) => body?.ethereum?.usd,
+  },
+  {
+    name: "coinmarketcap",
+    secretId: "COINMARKETCAP_API_KEY",
+    keyHeader: "X-CMC_PRO_API_KEY",
+    required: true,
+    url: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=1027&convert=USD",
+    price: (body) => body?.data?.["1027"]?.quote?.USD?.price,
+  },
+  {
+    name: "coinbase",
+    required: false,
+    url: "https://api.coinbase.com/v2/prices/ETH-USD/spot",
+    price: (body) => (body?.data?.base === "ETH" && body?.data?.currency === "USD" ? body.data.amount : undefined),
+  },
+];
+
+function toMicroUsd(value: unknown): bigint {
+  const price = typeof value === "string" ? Number(value) : value;
+  if (typeof price !== "number" || !Number.isFinite(price)) throw new Error("no valid price in the reply");
+  const microUsd = BigInt(Math.round(price * 1_000_000));
+  if (microUsd <= 0n) throw new Error("no valid price in the reply");
+  return microUsd;
+}
+
+/** Each node fetches on its own and the DON takes the median, since prices differ between requests. */
+function readSource(runtime: Runtime<Config>, source: PriceSource): PriceReading {
+  const { name, required } = source;
+  let apiKey: string | undefined;
+  if (source.secretId) {
+    try {
+      apiKey = runtime.getSecret({ id: source.secretId }).result().value;
+    } catch {
+      return { source: name, required, problem: `secret ${source.secretId} is missing` };
+    }
+    if (!apiKey) return { source: name, required, problem: `secret ${source.secretId} is empty` };
+  }
+  try {
+    const http = new cre.capabilities.HTTPClient();
+    const microUsd = http
+      .sendRequest(
+        runtime,
+        (sender, key: string) => {
+          const response = sender
+            .sendRequest({
+              url: source.url,
+              method: "GET",
+              multiHeaders: source.keyHeader ? { [source.keyHeader]: { values: [key] } } : {},
+            })
+            .result();
+          if (!ok(response)) throw new Error(`status ${response.statusCode}`);
+          return toMicroUsd(source.price(JSON.parse(text(response))));
+        },
+        consensusMedianAggregation<bigint>(),
+      )(apiKey ?? "")
+      .result();
+    return { source: name, required, microUsd };
+  } catch (error) {
+    // Only the message of an error thrown above, or the capability's own, and neither holds the key.
+    return { source: name, required, problem: (error as Error).message };
+  }
+}
+
 /** Every node re-derives the facts from the chain. The API only supplies what to check. */
 export function attestDecision(runtime: Runtime<Config>, decisionId: string): string {
   const config = runtime.config;
@@ -100,6 +185,15 @@ export function attestDecision(runtime: Runtime<Config>, decisionId: string): st
     runtime.log(`Decision ${decisionId} has no clearance to attest`);
     return "nothing to attest";
   }
+
+  // Not being able to check isn't a finding. No report is written, so the hook keeps refusing and a later run can retry.
+  const market = compareSources(PRICE_SOURCES.map((source) => readSource(runtime, source)), config.maxSourceDeviationBps);
+  if (!market.ok) {
+    runtime.log(`Decision ${decisionId}: no attestation. ${market.problem}`);
+    return `no attestation: ${market.problem}`;
+  }
+  runtime.log(`Price sources ${market.used.join(", ")} agree within ${market.deviationBps} bps`);
+
   const client = evmClient(config);
 
   const records = Object.fromEntries(
@@ -145,6 +239,7 @@ export function attestDecision(runtime: Runtime<Config>, decisionId: string): st
     claimedDigest: proof.digest,
     computedDigest,
     impactBps,
+    market: { deviationBps: market.deviationBps, maxDeviationBps: market.maxDeviationBps },
     now: Math.floor(runtime.now().getTime() / 1000),
     chainId: config.chainId,
   });
