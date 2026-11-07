@@ -58,6 +58,8 @@ export type AttestationInput = {
   impactBps: number | undefined;
   now: number;
   chainId: number;
+  /** How far external price sources spread, when the attestor reads them. Only the CRE workflow does. */
+  market?: { deviationBps: number; maxDeviationBps: number };
 };
 
 export type AttestationResult = { status: typeof ATTESTED | typeof REFUSED; problems: string[]; impactBps: number };
@@ -87,7 +89,34 @@ export function evaluateAttestation(input: AttestationInput): AttestationResult 
   else if (input.impactBps > limits.maxImpactBps) {
     problems.push(`Price impact is now ${input.impactBps} bps against a limit of ${limits.maxImpactBps}`);
   }
+  if (input.market && input.market.deviationBps > input.market.maxDeviationBps) {
+    problems.push(`Price sources disagree by ${input.market.deviationBps} bps against a limit of ${input.market.maxDeviationBps}`);
+  }
   return { status: problems.length === 0 ? ATTESTED : REFUSED, problems, impactBps: input.impactBps ?? 0 };
+}
+
+/** One external source's price in micro-USD, or why there's no usable one. */
+export type PriceReading = { source: string; required: boolean; microUsd?: bigint; problem?: string };
+
+export type SourceComparison =
+  | { ok: true; deviationBps: number; maxDeviationBps: number; used: string[] }
+  | { ok: false; problem: string };
+
+/** Fails closed: a missing required source, too few readings or a bad threshold means no verdict at all. */
+export function compareSources(readings: PriceReading[], maxDeviationBps: unknown): SourceComparison {
+  if (typeof maxDeviationBps !== "number" || !Number.isInteger(maxDeviationBps) || maxDeviationBps <= 0) {
+    return { ok: false, problem: "The source deviation limit isn't configured" };
+  }
+  const missing = readings.filter((r) => r.required && r.microUsd === undefined);
+  if (missing.length > 0) {
+    return { ok: false, problem: `Required price sources are missing: ${missing.map((r) => `${r.source} (${r.problem ?? "no price"})`).join(", ")}` };
+  }
+  const usable = readings.filter((r) => r.microUsd !== undefined && r.microUsd > 0n);
+  if (usable.length < 2) return { ok: false, problem: `Only ${usable.length} price source answered, and at least 2 must` };
+  const prices = usable.map((r) => r.microUsd!);
+  const low = prices.reduce((a, b) => (b < a ? b : a));
+  const high = prices.reduce((a, b) => (b > a ? b : a));
+  return { ok: true, deviationBps: Number(((high - low) * 10_000n) / low), maxDeviationBps, used: usable.map((r) => r.source) };
 }
 
 export function encodeAttestationReport(digest: Hex, result: AttestationResult, clearanceInputsHash: Hex): Hex {
