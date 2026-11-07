@@ -1,27 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clearance docs</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2316324f'/><path d='M8 17l5 5 11-12' fill='none' stroke='%23fff' stroke-width='3.4'/></svg>" />
+  <meta name="theme-color" content="#0A0E14" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23C9F04D'/><path d='M8 17l5 5 11-12' fill='none' stroke='%230A0E14' stroke-width='3.4'/></svg>" />
+  <script>try { var t = localStorage.getItem("clearance-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body class="docs-page">
-  <header class="top">
-    <a class="mark" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="6"/><path d="M8 17l5 5 11-12"/></svg>Clearance</a>
-    <nav aria-label="Main"><a href="/">Home</a><a class="button small" data-dashboard href="#">Open dashboard</a></nav>
+  <a class="skip" href="#docs-main">Skip to content</a>
+  <header class="nav" data-nav>
+    <a class="mark" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M8 17l5 5 11-12"/></svg>Clearance</a>
+    <nav id="nav-links" class="nav-links" aria-label="Main">
+      <a href="/">Home</a>
+      <a href="/#playground">Playground</a>
+      <a href="/#status">Status</a>
+      <a href="https://github.com/sagarjethi/clearance">GitHub</a>
+      <a class="nav-narrow" data-dashboard href="http://localhost:5183/">Open dashboard</a>
+    </nav>
+    <div class="nav-end">
+      <button class="icon-button" type="button" data-theme-toggle aria-label="Switch to light theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></button>
+      <a class="button small" data-dashboard href="http://localhost:5183/">Open dashboard</a>
+      <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="nav-links" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
   </header>
   <div class="docs">
     <nav class="toc" aria-label="On this page">
       <a href="#quickstart">Quickstart</a><a href="#swap">Clear a swap</a><a href="#verdicts">Verdicts</a><a href="#human">Owner approval</a><a href="#attest">Independent check</a><a href="#payment">Clear a payment</a><a href="#public">Public endpoints</a><a href="#limits">Owner limits</a><a href="#errors">Errors</a><a href="#contracts">Contracts</a>
     </nav>
-    <article class="prose">
+    <article class="prose" id="docs-main">
       <h1>Docs</h1>
       <p>Clearance gives an agent's trades and payments a check it can't skip. You call the API before acting, and the chain refuses anything that wasn't cleared.</p>
 
       <h2 id="quickstart">Quickstart</h2>
-      <p>Run the whole system on a throwaway local chain. It needs Foundry, Node 22 or newer and pnpm. It uses no real funds and no keys.</p>
-<pre><code>git clone --recursive &lt;repo&gt; clearance
+      <p>Run the whole system on a throwaway local chain. It needs Foundry, Node 22 or newer, pnpm and Bun. It uses no real funds and no keys.</p>
+<pre><code>git clone --recursive https://github.com/sagarjethi/clearance.git
 cd clearance
 pnpm install
 pnpm start</code></pre>
@@ -133,6 +147,9 @@ pnpm start</code></pre>
       </table>
     </article>
   </div>
+  <footer class="foot">
+    <p class="foot-note wrap">Test networks only. Not audited. Don't put real funds behind it. <a href="/#status">See what's proven</a>.</p>
+  </footer>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
