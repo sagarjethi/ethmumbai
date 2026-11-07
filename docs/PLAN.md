@@ -1,4 +1,4 @@
-# Clearance build plan
+# BeforeCoin build plan
 
 Spec: `../research/09-clearance-hour-one.md` and the Clearance section of `../research/site/src/projects.html`.
 
