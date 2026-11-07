@@ -2,3 +2,8 @@ local-simulation:
   rpcs:
     - chain-name: ethereum-testnet-sepolia
       url: https://ethereum-sepolia-rpc.publicnode.com
+# `pnpm cre:simulate` runs a throwaway fork of Sepolia on this port, so a broadcast costs nothing and reaches nothing real.
+fork-simulation:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: http://127.0.0.1:18645
