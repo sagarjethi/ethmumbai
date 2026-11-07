@@ -44,7 +44,7 @@ const config: Config = {
   maxSourceDeviationBps: 100,
 };
 
-const KEYS = { COINGECKO_API_KEY: "test-cg-key", COINMARKETCAP_API_KEY: "test-cmc-key" };
+const KEYS = { COINGECKO_API_KEY: "test-cg-key" };
 
 function runtimeWith(secrets: Record<string, string> = KEYS, overrides: Partial<Config> = {}) {
   const runtime = newTestRuntime(new Map([["main", new Map(Object.entries(secrets))]])) as any;
@@ -55,13 +55,11 @@ function runtimeWith(secrets: Record<string, string> = KEYS, overrides: Partial<
 /** What each source's real API replies, shaped as its docs and live replies show. */
 const REPLIES = {
   coingecko: (price: unknown) => ({ ethereum: { usd: price } }),
-  coinmarketcap: (price: unknown) => ({ status: { error_code: "0" }, data: [{ id: 1027, symbol: "ETH", quote: [{ symbol: "USD", price }] }] }),
   coinbase: (price: unknown) => ({ data: { amount: price, base: "ETH", currency: "USD" } }),
 };
 type Reply = { status?: number; body?: unknown; raw?: string };
 const healthy: Record<keyof typeof REPLIES, Reply> = {
   coingecko: { body: REPLIES.coingecko(2245.36) },
-  coinmarketcap: { body: REPLIES.coinmarketcap(2246.1) },
   coinbase: { body: REPLIES.coinbase("2245.365") },
 };
 
@@ -255,7 +253,6 @@ describe("attest workflow", () => {
       expect(statusOf(m.written()!)).toBe(1);
       const headersFor = (name: string) => m.requests.find((r) => r.url.includes(name))?.multiHeaders;
       expect(headersFor("coingecko")["x-cg-demo-api-key"].values).toEqual([KEYS.COINGECKO_API_KEY]);
-      expect(headersFor("coinmarketcap")["X-CMC_PRO_API_KEY"].values).toEqual([KEYS.COINMARKETCAP_API_KEY]);
       expect(Object.keys(headersFor("coinbase") ?? {})).toEqual([]);
     });
 
@@ -266,23 +263,17 @@ describe("attest workflow", () => {
       expect(m.chainReads()).toBe(15);
     });
 
-    test("writes a refusal when two required sources disagree past the limit", () => {
-      const m = setup({ market: { coinmarketcap: { body: REPLIES.coinmarketcap(2400) } } });
-      attestDecision(runtimeWith(), "d1");
-      expect(statusOf(m.written()!)).toBe(2);
-    });
-
-    test("writes a refusal when the optional source disagrees", () => {
-      const m = setup({ market: { coinbase: { body: REPLIES.coinbase("3000") } } });
+    test("writes a refusal when the two sources disagree past the limit", () => {
+      const m = setup({ market: { coinbase: { body: REPLIES.coinbase("2400") } } });
       attestDecision(runtimeWith(), "d1");
       expect(statusOf(m.written()!)).toBe(2);
     });
 
     test("attests at exactly the limit and refuses one step past it", () => {
-      const at = setup({ market: { coingecko: { body: REPLIES.coingecko(2000) }, coinmarketcap: { body: REPLIES.coinmarketcap(2020) }, coinbase: { status: 503, raw: "" } } });
+      const at = setup({ market: { coingecko: { body: REPLIES.coingecko(2000) }, coinbase: { body: REPLIES.coinbase("2020") } } });
       attestDecision(runtimeWith(), "d1");
       expect(statusOf(at.written()!)).toBe(1);
-      const past = setup({ market: { coingecko: { body: REPLIES.coingecko(2000) }, coinmarketcap: { body: REPLIES.coinmarketcap(2020.2) }, coinbase: { status: 503, raw: "" } } });
+      const past = setup({ market: { coingecko: { body: REPLIES.coingecko(2000) }, coinbase: { body: REPLIES.coinbase("2020.2") } } });
       attestDecision(runtimeWith(), "d1");
       expect(statusOf(past.written()!)).toBe(2);
     });
@@ -307,8 +298,8 @@ describe("attest workflow", () => {
     });
 
     test("writes nothing when a required source rejects the key", () => {
-      const m = setup({ market: { coinmarketcap: { status: 401, body: { status: { error_code: 1002 } } } } });
-      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coinmarketcap");
+      const m = setup({ market: { coingecko: { status: 401, body: { status: { error_code: 1002 } } } } });
+      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coingecko");
     });
 
     const malformed: [string, Reply][] = [
@@ -327,21 +318,14 @@ describe("attest workflow", () => {
       });
     }
 
-    test("carries on when only the optional source is down", () => {
+    test("writes nothing when Coinbase is down", () => {
       const m = setup({ market: { coinbase: { status: 503, raw: "" } } });
-      attestDecision(runtimeWith(), "d1");
-      expect(statusOf(m.written()!)).toBe(1);
+      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coinbase");
     });
 
-    test("writes nothing when CoinMarketCap answers for another coin", () => {
-      const m = setup({ market: { coinmarketcap: { body: { data: [{ id: 1, symbol: "BTC", quote: [{ symbol: "USD", price: 2246 }] }] } } } });
-      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coinmarketcap");
-    });
-
-    test("ignores a Coinbase reply for another pair", () => {
+    test("writes nothing when Coinbase answers for another pair", () => {
       const m = setup({ market: { coinbase: { body: { data: { amount: "90000", base: "BTC", currency: "USD" } } } } });
-      attestDecision(runtimeWith(), "d1");
-      expect(statusOf(m.written()!)).toBe(1);
+      expectNoAttestation(attestDecision(runtimeWith(), "d1"), m, "coinbase");
     });
 
     test("writes nothing when the limit isn't configured", () => {
@@ -351,7 +335,7 @@ describe("attest workflow", () => {
     });
 
     test("never logs a key", () => {
-      const m = setup({ market: { coinmarketcap: { status: 401, raw: "" } } });
+      const m = setup({ market: { coingecko: { status: 401, raw: "" } } });
       const runtime = runtimeWith();
       const result = attestDecision(runtime, "d1");
       const logged = [result, ...runtime.getLogs()].join("\n");
