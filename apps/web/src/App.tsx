@@ -177,7 +177,7 @@ function TopBar({ view, agent, offline, theme, onToggleTheme }: { view: View; ag
     <header className="topbar">
       <a className="mark" href="#overview">
         <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" /><path d="M8 17l5 5 11-12" /></svg>
-        Clearance
+        BeforeCoin
       </a>
       <nav aria-label="Dashboard" className="tabs" ref={tabs}>
         {NAV.map((item) => (
