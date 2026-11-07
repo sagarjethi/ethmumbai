@@ -243,6 +243,7 @@ h2 { font: 600 19px/1.2 var(--cond); margin: 0; letter-spacing: .005em; }
 .verifier-col li small { color: var(--muted); }
 .model { color: var(--muted); margin: 0 0 6px; font-size: 12.5px; }
 .hash { color: var(--muted); font-size: 11.5px; overflow-wrap: anywhere; }
+.request-id { display: block; margin-bottom: 4px; }
 .detail-foot { margin: 10px 0 0; font-size: 13px; }
 .detail-foot a { text-underline-offset: 2px; }
 .pill { display: inline-block; font-size: 12px; font-weight: 600; line-height: 1.5; padding: 1px 8px; border-radius: 999px; white-space: nowrap; color: var(--tone); background: color-mix(in srgb, var(--tone) var(--tint), transparent); }

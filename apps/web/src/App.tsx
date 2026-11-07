@@ -177,7 +177,7 @@ function TopBar({ view, agent, offline, theme, onToggleTheme }: { view: View; ag
     <header className="topbar">
       <a className="mark" href="#overview">
         <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" /><path d="M8 17l5 5 11-12" /></svg>
-        Clearance
+        BeforeCoin
       </a>
       <nav aria-label="Dashboard" className="tabs" ref={tabs}>
         {NAV.map((item) => (
@@ -606,6 +606,7 @@ function DecisionDetail({ decision, tokens }: { decision: Decision; tokens?: Age
             <p className="model">
               {e.review.status === "ok" ? `${e.review.provider}: ${e.review.summary}` : e.review.status === "failed" ? `${e.review.provider} failed, so rules alone decided.` : "No model set up. Rules alone decided."}
             </p>
+            {e.review.trace?.requestId && <code className="hash request-id">Request ID {e.review.trace.requestId}</code>}
             <code className="hash" title={e.evidenceHash}>Evidence {short(e.evidenceHash, 10, 6)}</code>
           </div>
         ))}
@@ -816,12 +817,12 @@ function Keys() {
       {created?.secret && (
         <div className="secret" role="status">
           <h2>Copy this key now</h2>
-          <p>It won't be shown again. Only its hash is stored.</p>
+          <p>It won't be shown again. Only its hash is stored. Replace <code>your-api</code> below with the address of your API.</p>
           <div className="secret-row">
             <code>{created.secret}</code>
             <CopyButton key={created.secret} value={created.secret} />
           </div>
-          <pre>{`curl -X POST http://127.0.0.1:18787/v1/clear/swap \\
+          <pre>{`curl -X POST https://your-api/v1/clear/swap \\
   -H "authorization: Bearer ${created.secret}" \\
   -H "content-type: application/json" \\
   -d @swap.json`}</pre>

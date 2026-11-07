@@ -1,11 +1,13 @@
-# Clearance
+# BeforeCoin
 
 A check AI agents can't skip.
 
 Agents hold real money, and a hijacked one will happily spend it.
 Other tools tell an agent what looks risky, then let it decide.
-Clearance takes that decision away.
+BeforeCoin takes that decision away.
 Independent verifiers check the exact action against live data, and without enough signatures the pool refuses the swap and the wallet refuses the payment.
+
+The code calls the signed approval a clearance, so names like `ClearanceHook` are expected.
 
 ## Run it
 
@@ -158,7 +160,7 @@ packages/shared/  EIP-712, canonical hashing, limits, ENSv2, human approval chec
 apps/verifier/    Facts, rules, model review, signing
 apps/api/         Clearing, quorum, World gate, x402, keys, proofs
 apps/agent/       Agent, attack scenarios, runner
-apps/mcp/         MCP server, so any agent can call Clearance as a tool
+apps/mcp/         MCP server, so any agent can call BeforeCoin as a tool
 apps/web/         Owner dashboard
 apps/site/        Website and docs
 apps/mock-world/  Local test issuer for the World flow

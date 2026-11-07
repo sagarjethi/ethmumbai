@@ -189,7 +189,7 @@ h1 { font: 600 clamp(62px, 7vw, 104px)/.92 var(--cond); letter-spacing: -.006em;
 /* ---- Built with ---- */
 .built { margin-top: clamp(40px, 5vw, 64px); }
 .built h2 { font: 500 16px/1.4 var(--sans); color: var(--muted); margin-bottom: 12px; }
-.built dl { margin: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.built dl { margin: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--line); }
 .built dl > div { padding: 14px 18px 0 0; }
 .built dl > div + div { padding-left: 18px; border-left: 1px solid var(--line); }
 .built dt { font: 600 24px/1.1 var(--cond); margin-bottom: 4px; }
@@ -268,7 +268,8 @@ th:last-child, td:last-child { padding-right: 0; }
 .copy { font: 500 13px/1 var(--sans); padding: 6px 9px; background: none; color: var(--muted); border: 1px solid var(--line-2); border-radius: 6px; cursor: pointer; white-space: nowrap; }
 .copy:hover { color: var(--text); background: var(--surface-2); }
 .code pre { margin: 0; padding: 12px; overflow: auto; font-size: 12.5px; line-height: 1.55; flex: 1; }
-.pg .code pre { height: 396px; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* flex: 1 sizes to content in an auto-height column, so it has to go for the height to apply. */
+.pg .code pre { flex: none; height: 396px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .code pre code { font-size: inherit; }
 
 .live { margin-top: 28px; display: grid; gap: 12px; }
@@ -374,7 +375,7 @@ details[open] > summary::after { content: "-"; }
   .plans > :last-child, .ways > :last-child { grid-column: 1 / -1; }
   .built dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
   .built dl > div, .built dl > div + div { padding: 14px 0; border-left: 0; border-bottom: 1px solid var(--line); }
-  .built dl > div:last-child { grid-column: 1 / -1; border-bottom: 0; }
+  .built dl > div:nth-last-child(-n+2) { border-bottom: 0; }
   .pg { grid-template-columns: minmax(0, 1fr); }
   .pg-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pg-panel { grid-template-columns: minmax(0, 1fr); }
@@ -403,19 +404,71 @@ details[open] > summary::after { content: "-"; }
   .gate-action { min-height: 112px; }
   .check-list { padding: 16px; }
 
+  /* A phone reads one long column, so spacing stays tight. */
+  .section, .closing { margin-top: 52px; }
+  .section-head { margin-bottom: 18px; }
+  .section-head h2, .faq-head h2, .closing h2 { font-size: 36px; margin-bottom: 10px; }
+  .section-head p { font-size: 16px; }
+  .panel, .way { padding: 16px; }
+  .fine { font-size: 14px; }
+  .ways { margin-top: 24px; gap: 10px; }
+  .way { gap: 6px; }
+  .way h2 { font-size: 25px; }
+  .way p { font-size: 15px; }
+  .built { margin-top: 32px; }
+  .built dt { font-size: 22px; }
+  .built dd { font-size: 14px; }
+  .built dl > div, .built dl > div + div { padding: 10px 0; }
+  .rail { height: 52px; }
+  .compare, .steps, .qa, .plans { gap: 10px; }
+  .compare-col { padding: 16px; }
+  .compare-col h3 { font-size: 26px; margin-bottom: 10px; }
+  .compare-col ol { gap: 7px; }
+
+  /* The step number sits beside its text. */
+  .steps li { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; padding: 14px 16px; }
+  .steps li::before { grid-row: 1 / span 2; font-size: 28px; margin: 0; }
+  .steps h3 { margin-bottom: 4px; }
+  .steps p { font-size: 15px; }
+
+  .qa article { padding: 14px 16px; gap: 6px; }
+  .qa .q { font-size: 22px; }
+  .qa p { font-size: 15px; }
+
+  .pg { gap: 12px; padding: 12px; }
+  .pg-actions button { padding: 8px 10px; font-size: 15px; }
+  .live { margin-top: 20px; gap: 10px; }
+  .live-head h3 { font-size: 28px; }
+  .record dl { gap: 12px; }
+  .record dd { font-size: 38px; }
+  .plan .price { font-size: 32px; margin: 4px 0 6px; }
+  .plan p:last-child, .plain, .check-side p { font-size: 15px; }
+  .tests b { font-size: 34px; }
+  .tests div { padding: 12px 14px; }
+  .closing-inner { padding: 20px 16px; }
+  .foot { padding-block: 24px 20px; margin-top: 44px; }
+
   /* Wide tables read as stacked rows on a phone. */
   .check-list thead, .attacks thead, .status thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .check-list tr, .attacks tr, .status tr { display: grid; gap: 2px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .check-list tr, .attacks tr, .status tr { display: grid; gap: 2px; padding: 9px 0; border-bottom: 1px solid var(--line); }
   .check-list tbody tr:last-child, .attacks tbody tr:last-child, .status tbody tr:last-child { border-bottom: 0; }
   .check-list td, .attacks td, .status td { display: block; border: 0; padding: 0; white-space: normal !important; }
+  .check-list td, .attacks td, .status td { font-size: 15px; line-height: 1.35; }
   .check-list td:first-child, .attacks td:first-child, .status td:first-child { font-weight: 600; }
+  /* The short label shares the top line with the row's name. */
+  .attacks tr, .status tr { grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: start; }
+  .attacks td:first-child, .status td:first-child { grid-area: 1 / 1; }
+  .attacks td:nth-child(3), .status td:nth-child(2) { grid-area: 1 / 2; justify-self: end; }
+  .attacks td:nth-child(3) { font-size: 14px; }
+  .attacks td:nth-child(2), .status td:nth-child(3) { grid-column: 1 / -1; grid-row: 2; }
   .check-list tr { grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: center; }
   .check-list td:first-child { grid-column: 1 / -1; }
   .check-list td:nth-child(2) { font-size: 14px; }
   .check-list td:nth-child(3) { justify-self: end; }
-  .pg .code pre { white-space: pre; overflow-wrap: normal; }
+  .pg .code pre { white-space: pre; overflow-wrap: normal; height: auto; max-height: 240px; }
 }
 @media (max-width: 360px) {
+  h1 { font-size: 58px; }
   /* Too narrow for the button, so it moves into the menu. */
   .nav-end .button.small { display: none; }
   .nav-links a.nav-narrow { display: block; }
