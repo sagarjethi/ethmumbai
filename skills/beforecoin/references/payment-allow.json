@@ -1,0 +1,99 @@
+{
+  "id": "1f65fa1fa5d4977c",
+  "action": {
+    "kind": "payment",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "token": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "tokenName": "USDC",
+    "tokenVersion": "2",
+    "authorization": {
+      "from": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      "to": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+      "value": "500000",
+      "validAfter": "0",
+      "validBefore": "1794019418",
+      "nonce": "0xb7ab537cc2e395b8658db7c0322d911d9f7ddd8e94460f2aa6f01e7af33bd343"
+    },
+    "reason": "Pay the invoice"
+  },
+  "actionHash": "0x1192d26bee8f370368a126b62104e4e01a1ea4947dad53832793e925eabb3200",
+  "requested": "500000",
+  "required": 2,
+  "evaluations": [
+    {
+      "verifier": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "verdict": "ALLOW",
+      "maxAmount": "500000",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Allowed payee, within the payment limit"
+        }
+      ],
+      "evidenceHash": "0x1a58949485891c423c2d2e289c06e069ea009c7e0c37225525f42102db989a06",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "verdict": "ALLOW",
+      "maxAmount": "500000",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Allowed payee, within the payment limit"
+        }
+      ],
+      "evidenceHash": "0x1a58949485891c423c2d2e289c06e069ea009c7e0c37225525f42102db989a06",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "verdict": "ALLOW",
+      "maxAmount": "500000",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Allowed payee, within the payment limit"
+        }
+      ],
+      "evidenceHash": "0x1a58949485891c423c2d2e289c06e069ea009c7e0c37225525f42102db989a06",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    }
+  ],
+  "unreachable": [],
+  "decidedAt": 1794019298,
+  "verdict": "ALLOW",
+  "verifierSignatures": [
+    {
+      "signer": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "signature": "0x4c275cb6a85591ed1c816cf15482881d54552fcf67d16f64a6d8329a0d1e14b640436a1367d16320ee4d6ffdfc0469858f682316459516e1bf2757be20595e641c"
+    },
+    {
+      "signer": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "signature": "0xc483664ee5edde635e9e2ab338e1e962e290d24fd0bbf091e70b94863b2e62f77a21a5b75f4e0973cef560d50e6b235a0abff020345a20a290bdad5c03ce14031c"
+    },
+    {
+      "signer": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "signature": "0x42171758e0a13a37246d03af75cc4dcdc5363d79322860ca9b0c767e33bce2f866e58d6f6243ad953b060c6aa223389fc19458c0099300212260a811275301f01c"
+    }
+  ]
+}

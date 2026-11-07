@@ -1,0 +1,90 @@
+{
+  "id": "3cf3ce7b048489cc",
+  "action": {
+    "kind": "swap",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "pool": {
+      "currency0": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "currency1": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "fee": 3000,
+      "tickSpacing": 60,
+      "hooks": "0x6ff36c56F40ddB2598d857aF0cF8Cc8915046080"
+    },
+    "zeroForOne": false,
+    "amountIn": "2000000000",
+    "reason": "Owner-reviewed position"
+  },
+  "actionHash": "0xa09aa967d2269c6f5254883a4b24313e93ff041cc5d6e2af8ebb01d852a268d4",
+  "requested": "2000000000",
+  "required": 2,
+  "evaluations": [
+    {
+      "verifier": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "verdict": "HUMAN_REQUIRED",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "human_required",
+          "severity": "human",
+          "detail": "$2,000 is above the owner's $1,000 limit, so a fresh human approval is required",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x5d74f45ebb2003021ace2512fbf006e6b79df8abea6337a16c05476f89d2cd73",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "verdict": "HUMAN_REQUIRED",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "human_required",
+          "severity": "human",
+          "detail": "$2,000 is above the owner's $1,000 limit, so a fresh human approval is required",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x5d74f45ebb2003021ace2512fbf006e6b79df8abea6337a16c05476f89d2cd73",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "verdict": "HUMAN_REQUIRED",
+      "maxAmount": "0",
+      "minAmountOut": "0",
+      "reasons": [
+        {
+          "code": "human_required",
+          "severity": "human",
+          "detail": "$2,000 is above the owner's $1,000 limit, so a fresh human approval is required",
+          "source": "ens"
+        }
+      ],
+      "evidenceHash": "0x5d74f45ebb2003021ace2512fbf006e6b79df8abea6337a16c05476f89d2cd73",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    }
+  ],
+  "unreachable": [],
+  "decidedAt": 1794019298,
+  "verdict": "HUMAN_REQUIRED",
+  "checkpoint": {
+    "id": "978c5e628d85020df921f957",
+    "url": "http://127.0.0.1:60392/v1/human/978c5e628d85020df921f957/start"
+  }
+}

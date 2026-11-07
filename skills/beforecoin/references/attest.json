@@ -1,0 +1,8 @@
+{
+  "mode": "local-attestor",
+  "status": "attested",
+  "problems": [],
+  "impactBps": 31,
+  "txHash": "0xaf6c8ae52e6fedde4823d7c9cc460a423f492c55565819e3cf9d3438be56f8a9",
+  "at": 1794019298
+}

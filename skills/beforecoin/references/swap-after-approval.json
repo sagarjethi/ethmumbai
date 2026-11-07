@@ -1,0 +1,120 @@
+{
+  "id": "a983672c4cd102f1",
+  "action": {
+    "kind": "swap",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "pool": {
+      "currency0": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "currency1": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "fee": 3000,
+      "tickSpacing": 60,
+      "hooks": "0x6ff36c56F40ddB2598d857aF0cF8Cc8915046080"
+    },
+    "zeroForOne": false,
+    "amountIn": "2000000000",
+    "reason": "Owner-reviewed position"
+  },
+  "actionHash": "0xa09aa967d2269c6f5254883a4b24313e93ff041cc5d6e2af8ebb01d852a268d4",
+  "requested": "2000000000",
+  "required": 2,
+  "evaluations": [
+    {
+      "verifier": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "verdict": "ALLOW",
+      "maxAmount": "2000000000",
+      "minAmountOut": "657890236057404871",
+      "reasons": [
+        {
+          "code": "human_approved",
+          "severity": "info",
+          "detail": "The owner approved this exact action",
+          "source": "world"
+        },
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Within every limit the owner set"
+        }
+      ],
+      "evidenceHash": "0xe06ddb37691a24c92cf2a67982510714da89113bf5d0fd886415fa5476905fa1",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "verdict": "ALLOW",
+      "maxAmount": "2000000000",
+      "minAmountOut": "657890236057404871",
+      "reasons": [
+        {
+          "code": "human_approved",
+          "severity": "info",
+          "detail": "The owner approved this exact action",
+          "source": "world"
+        },
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Within every limit the owner set"
+        }
+      ],
+      "evidenceHash": "0xe06ddb37691a24c92cf2a67982510714da89113bf5d0fd886415fa5476905fa1",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    },
+    {
+      "verifier": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "verdict": "ALLOW",
+      "maxAmount": "2000000000",
+      "minAmountOut": "657890236057404871",
+      "reasons": [
+        {
+          "code": "human_approved",
+          "severity": "info",
+          "detail": "The owner approved this exact action",
+          "source": "world"
+        },
+        {
+          "code": "within_limits",
+          "severity": "info",
+          "detail": "Within every limit the owner set"
+        }
+      ],
+      "evidenceHash": "0xe06ddb37691a24c92cf2a67982510714da89113bf5d0fd886415fa5476905fa1",
+      "review": {
+        "status": "not_configured",
+        "provider": "none"
+      },
+      "evaluatedAt": 1794019298
+    }
+  ],
+  "unreachable": [],
+  "decidedAt": 1794019298,
+  "verdict": "ALLOW",
+  "digest": "0xf9d3ee411de62d334e65eb3df8bc2755a5a754306c187d1a7dc4755df39296ab",
+  "attestationRequired": true,
+  "clearance": {
+    "agent": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "poolId": "0x13ac8f160fa226784ff6610c0761b9fd01b48ef1ecf8f81be8190f7f6e17c672",
+    "zeroForOne": false,
+    "maxAmountIn": "2000000000",
+    "minAmountOut": "657890236057404871",
+    "expiry": 1794019388,
+    "chainId": 31337,
+    "nonce": "412053331448038482867452124511101185870947725068044303909765929129890899230",
+    "inputsHash": "0x818b1a417e144c73a551c0a517cd6bee14ab9e27e4813d6051f81fa435554169"
+  },
+  "signatures": [
+    "0x819a451b8bbd88ac95c4fa13262eb193159b9dba761c358f9b2483d32457d8cc5a7a9dbf2ad88960e071d68f3216ca50f7c3711cf70f191bc089253fec26d9b61c",
+    "0xa13e40a37f8e3a31fadd0366746c97afbf2ff2ba03b5f2b7f6189a6b6d45e66f5947448ab199acb6d017d47df120f5af5d55c19335d9c459b67e141302759b5d1b",
+    "0xae715bf6943a5456d3b8b5b660530f9417918b8d1a95ba93a1c914c53e622fb27894efed55443cbb168f4ee020e61e3f9a4ed250931093217697fc46f396ad781b"
+  ],
+  "hookData": "0x000000000000000000000000a51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c013ac8f160fa226784ff6610c0761b9fd01b48ef1ecf8f81be8190f7f6e17c6720000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007735940000000000000000000000000000000000000000000000000009214baf1d6645c7000000000000000000000000000000000000000000000000000000006aee903c0000000000000000000000000000000000000000000000000000000000007a6900e936c383a1806e968a4e30585d301a243024a04d6d12a028bfc7e2b7b9651e818b1a417e144c73a551c0a517cd6bee14ab9e27e4813d6051f81fa43555416900000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000041819a451b8bbd88ac95c4fa13262eb193159b9dba761c358f9b2483d32457d8cc5a7a9dbf2ad88960e071d68f3216ca50f7c3711cf70f191bc089253fec26d9b61c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041a13e40a37f8e3a31fadd0366746c97afbf2ff2ba03b5f2b7f6189a6b6d45e66f5947448ab199acb6d017d47df120f5af5d55c19335d9c459b67e141302759b5d1b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041ae715bf6943a5456d3b8b5b660530f9417918b8d1a95ba93a1c914c53e622fb27894efed55443cbb168f4ee020e61e3f9a4ed250931093217697fc46f396ad781b00000000000000000000000000000000000000000000000000000000000000"
+}

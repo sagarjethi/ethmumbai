@@ -1,0 +1,20 @@
+{
+  "id": "978c5e628d85020df921f957",
+  "status": "approved",
+  "detail": "Fresh approval from the owner",
+  "action": {
+    "kind": "swap",
+    "agentName": "alice.agents.clearance.eth",
+    "account": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+    "pool": {
+      "currency0": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "currency1": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "fee": 3000,
+      "tickSpacing": 60,
+      "hooks": "0x6ff36c56F40ddB2598d857aF0cF8Cc8915046080"
+    },
+    "zeroForOne": false,
+    "amountIn": "2000000000",
+    "reason": "Owner-reviewed position"
+  }
+}
